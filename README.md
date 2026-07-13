@@ -1,34 +1,75 @@
-# Capstone Portfolio
+# React + TypeScript + Vite
 
-An interactive personal portfolio built to showcase front-end AI engineering work completed during my internship, alongside my AWS certifications.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Who this is for
+Currently, two official plugins are available:
 
-- **Recruiters and hiring managers** evaluating front-end and AI-adjacent engineering skills
-- **Peers in AI Fluency or similar tracks** looking for portfolio structure and patterns to borrow
-- **Developers curious about AI-assisted UIs** who want a static, zero-API-cost approach (no live LLM calls at runtime)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## About
+## React Compiler
 
-This isn't just a display case — the site itself is meant to be a working example of front-end AI engineering. Certifications (starting with AWS Cloud Practitioner) are shown as supporting credentials, but the core of the site is the projects built during this track.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Features
+## Expanding the ESLint configuration
 
-- Interactive project showcase
-- AI-generated project summaries (generated during development, baked into the site as static content — no live API calls, so no ongoing cost)
-- AWS certifications on display
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Stack
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-- React + Vite
-- TypeScript
-- Tailwind CSS
-- Deployed on Vercel
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-## Status
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
-In active development as part of an 8-week AI Fluency / front-end AI engineering track.
+```
 
-## License
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-MIT — see [LICENSE](./LICENSE)
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
+```
