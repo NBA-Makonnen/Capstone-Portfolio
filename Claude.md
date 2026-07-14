@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Guidance for Claude Code / Cursor when working in this repository.
+Guidance for Claude Code / Cursor / VS code when working in this repository.
 
 ## Project
 
@@ -31,3 +31,10 @@ Capstone Portfolio — an interactive personal site showcasing front-end AI engi
 
 - This project has no backend and no API keys in the codebase — keep it that way unless explicitly asked to change the architecture
 - Ask before adding new dependencies
+
+## Rules learned from the workflow drill (Week 2)
+
+- Vague prompts to AI agents will silently touch files far outside the requested scope (e.g., asking for a contact form resulted in edits to Header, Footer, Hero, and Projects too). Always state scope boundaries explicitly in prompts.
+- Do not let AI wire up third-party services (analytics, form delivery, APIs) without explicit approval — it will pick one on its own if not constrained.
+- This project has `verbatimModuleSyntax` enabled in tsconfig — type-only imports must use `import { type X }`, not `import { X }`.
+- Always request an explicit verification step (tests, and running them) in the prompt itself. AI assistants do not self-verify unless asked.
