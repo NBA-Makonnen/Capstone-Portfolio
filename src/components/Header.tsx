@@ -1,20 +1,70 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/projects", label: "Projects" },
+  { href: "/certificates", label: "Certificates" },
+  { href: "/contact", label: "Contact" },
+];
+
 export function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-brand/20">
-      <nav className="flex gap-6 font-heading text-lg">
-        <Link href="/">Home</Link>
-        <Link href="/projects">Projects</Link>
-        <Link href="/certificates">Certificates</Link>
-        <Link href="/contact">Contact</Link>
-      </nav>
-      <div className="flex items-center gap-4 text-sm">
-        <a href="https://www.linkedin.com/in/makonnen-mulima-b9a685231" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://github.com/NBA-Makonnen" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <ThemeToggle />
+    <header className="relative border-b border-brand/20">
+      <div className="flex items-center justify-between px-6 py-4">
+        <nav className="hidden md:flex gap-6 font-heading text-lg">
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden md:flex items-center gap-4 text-sm">
+          <a href="https://www.linkedin.com/in/makonnen-mulima-b9a685231" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+          <a href="https://github.com/NBA-Makonnen" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <ThemeToggle />
+        </div>
+
+        <button
+          className="md:hidden flex flex-col justify-center gap-1.5 w-8 h-8"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+          aria-expanded={isOpen}
+        >
+          <span className="block h-0.5 w-6 bg-current" />
+          <span className="block h-0.5 w-6 bg-current" />
+          <span className="block h-0.5 w-6 bg-current" />
+        </button>
       </div>
+
+      {isOpen && (
+        <div className="md:hidden flex flex-col gap-4 px-6 pb-6 font-heading text-lg">
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setIsOpen(false)}>
+              {link.label}
+            </Link>
+          ))}
+          <div className="flex items-center gap-4 text-sm pt-2 border-t border-brand/20">
+            <a href="https://www.linkedin.com/in/makonnen-mulima-b9a685231" target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+            <a href="https://github.com/NBA-Makonnen" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+            <ThemeToggle />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
