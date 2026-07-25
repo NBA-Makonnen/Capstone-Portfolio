@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Guidance for Claude Code / Cursor / VS code when working in this repository.
+Guidance for Claude Code / Cursor / VS Code when working in this repository.
 
 ## Project
 
@@ -8,18 +8,26 @@ Capstone Portfolio — an interactive personal site showcasing front-end AI engi
 
 ## Stack
 
-- React 18 + Vite
-- TypeScript (strict mode)
-- Tailwind CSS for styling
-- Deployed on Vercel (static — no serverless functions, to keep this free)
+- Next.js (App Router), TypeScript (strict mode)
+- Server Components by default; Client Components only where interactivity requires it (marked `"use client"`)
+- Tailwind CSS v4 for styling
+- Deployed on Vercel — primarily static, but `/health` is a Server Component doing a live fetch to GitHub's public API, so it runs as a server-rendered route on request rather than pure static HTML. Intent is still to stay within Vercel's free tier; avoid adding further server-side calls without checking that.
+
+## Routes
+
+- `/` — Landing
+- `/projects` — Project case studies
+- `/certificates` — Certifications
+- `/contact` — Bio + contact form + CV download
+- `/health` — Health-check endpoint, not in nav
 
 ## Conventions
 
 - Commits follow Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `style:`, `refactor:`)
 - Functional components only, no class components
 - Components live in `src/components/`, one component per file
-- Prefer named exports over default exports
-- Project summaries are AI-generated once during development and stored as static content in `src/data/` — no live API calls at runtime, to keep hosting cost at $0
+- Named exports for regular components. Default exports are required (not optional) for Next.js App Router special files — `page.tsx`, `layout.tsx`, and similar — per framework convention.
+- Project summaries are AI-generated once during development and stored as static content in `src/data/` — no live API calls at runtime for these, to keep hosting cost at $0
 
 ## Commands
 
