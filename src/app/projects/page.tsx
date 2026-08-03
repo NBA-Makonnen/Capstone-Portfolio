@@ -64,7 +64,7 @@ export default function ProjectsPage() {
 
       <h2 className="text-2xl font-heading mb-4">AWS Projects</h2>
       <ul className="grid gap-6 sm:grid-cols-2 mb-12">
-        {awsProjects.map((project) => (
+        {awsProjects.map((project, index) => (
           <li key={project.title} className="border border-brand/20 rounded p-6">
             <h3 className="font-heading text-xl mb-3">{project.title}</h3>
             <div className="relative w-full aspect-video mb-3 bg-black/5 dark:bg-white/10 rounded overflow-hidden">
@@ -72,7 +72,7 @@ export default function ProjectsPage() {
                src={project.image}
                 alt={`${project.title} architecture diagram`}
                 fill
-                sizes="(max-width: 640px) 100vw, 50vw"
+                sizes="(max-width: 640px) 100vw, 50vw" loading={index === 0 ? "eager" : "lazy"}
                 className="object-contain"
                 />
             </div>
