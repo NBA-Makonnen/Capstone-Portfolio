@@ -59,7 +59,7 @@ export function ChatWidget() {
         onClick={() => setIsOpen((v) => !v)}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close chat" : "Ask about my work"}
-        className="fixed bottom-4 right-4 z-50 rounded-full bg-brand text-white px-5 py-3 shadow-lg font-heading"
+        className="fixed bottom-4 right-4 z-50 rounded-full bg-brand dark:bg-brand-dark text-white px-5 py-3 shadow-lg font-heading"
       >
         {isOpen ? "Close" : "Ask me"}
       </button>
@@ -68,7 +68,7 @@ export function ChatWidget() {
         <div
           role="region"
           aria-label="Chat"
-          className="fixed bottom-20 right-4 z-50 w-[90vw] max-w-sm h-[70vh] max-h-[520px] flex flex-col rounded-lg border border-brand/20 bg-white shadow-xl overflow-hidden"
+          className="fixed bottom-20 right-4 z-50 w-[90vw] max-w-sm h-[70vh] max-h-[520px] flex flex-col rounded-lg border border-brand/20 dark:border-brand-dark/30 bg-canvas dark:bg-canvas-dark shadow-xl overflow-hidden"
         >
           {/* Message list */}
           <div
@@ -97,8 +97,8 @@ export function ChatWidget() {
                   key={message.id}
                   className={
                     message.role === "user"
-                      ? "ml-auto max-w-[85%] rounded-lg bg-brand text-white px-3 py-2 text-sm"
-                      : "mr-auto max-w-[85%] rounded-lg bg-gray-100 text-gray-900 px-3 py-2 text-sm transition-opacity duration-200"
+                      ? "ml-auto max-w-[85%] rounded-lg bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm"
+                      : "mr-auto max-w-[85%] rounded-lg bg-black/5 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm transition-opacity duration-200"
                   }
                 >
                   {showThinking ? (
@@ -124,14 +124,14 @@ export function ChatWidget() {
             <button
               type="button"
               onClick={jumpToLatest}
-              className="mx-auto mb-2 text-xs bg-brand/90 text-white rounded-full px-3 py-1"
+              className="mx-auto mb-2 text-xs bg-brand/90 dark:bg-brand-dark/90 text-white rounded-full px-3 py-1"
             >
               Jump to latest
             </button>
           )}
 
           {error && (
-            <p className="text-xs text-red-600 px-4 pb-2">
+            <p className="text-xs text-red-600 dark:text-red-400 px-4 pb-2">
               Something went wrong on that last message. Please try again.
             </p>
           )}
@@ -139,21 +139,21 @@ export function ChatWidget() {
           {/* Input — 16px+ font size prevents iOS Safari auto-zoom on focus */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 border-t border-brand/20 p-2"
+            className="flex items-center gap-2 border-t border-brand/20 dark:border-brand-dark/30 p-2"
           >
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isBusy}
               placeholder="Ask a question..."
-              className="flex-1 rounded border border-brand/20 px-3 py-2 text-base disabled:opacity-50"
+              className="flex-1 rounded border border-brand/20 dark:border-brand-dark/30 bg-canvas dark:bg-canvas-dark text-ink dark:text-ink-dark px-3 py-2 text-base disabled:opacity-50"
               style={{ fontSize: 16 }}
             />
             {isBusy ? (
               <button
                 type="button"
                 onClick={stop}
-                className="rounded bg-gray-200 px-3 py-2 text-sm font-heading"
+                className="rounded bg-black/10 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm font-heading"
               >
                 Stop
               </button>
@@ -161,7 +161,7 @@ export function ChatWidget() {
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="rounded bg-brand text-white px-3 py-2 text-sm font-heading disabled:opacity-50"
+                className="rounded bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm font-heading disabled:opacity-50"
               >
                 Send
               </button>
