@@ -13,7 +13,15 @@ export default function ContactPage() {
           href="/resume.pdf"
           className="inline-block mt-4 border border-brand dark:border-brand-dark rounded px-4 py-2 font-body text-sm"
         >
-          Download CV 
+          Download CV
+        </a>
+        <a
+          href="https://calendly.com/bundamulima/30min"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-4 ml-3 border border-brand dark:border-brand-dark rounded px-4 py-2 font-body text-sm"
+        >
+          Book a call
         </a>
       </div>
       <ContactForm />
