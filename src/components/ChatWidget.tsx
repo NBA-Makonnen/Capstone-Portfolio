@@ -9,7 +9,7 @@ export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
 
-  const { messages, sendMessage, status, stop, error } = useChat({
+  const { messages, sendMessage, status, stop, error, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
@@ -77,9 +77,16 @@ export function ChatWidget() {
             className="flex-1 overflow-y-auto p-4 space-y-3"
           >
             {messages.length === 0 && (
-              <p className="opacity-60 text-sm">
-                Ask me about my projects, certifications, or background.
-              </p>
+              <div className="text-sm opacity-70">
+                <p className="mb-2">Ask me about my projects, certifications, or background.</p>
+                <button
+                  type="button"
+                  onClick={() => setInput("What AWS projects have you built?")}
+                  className="underline text-left"
+                >
+                  Try: &quot;What AWS projects have you built?&quot;
+                </button>
+              </div>
             )}
 
             {messages.map((message, idx) => {
@@ -130,10 +137,19 @@ export function ChatWidget() {
             </button>
           )}
 
-          {error && (
-            <p className="text-xs text-red-600 dark:text-red-400 px-4 pb-2">
-              Something went wrong on that last message. Please try again.
-            </p>
+          {error && !isBusy && (
+            <div className="px-4 pb-2 flex items-center justify-between gap-2">
+              <p className="text-xs text-red-600 dark:text-red-400">
+                That last message didn&apos;t go through.
+              </p>
+              <button
+                type="button"
+                onClick={() => regenerate()}
+                className="text-xs underline text-red-600 dark:text-red-400 whitespace-nowrap"
+              >
+                Retry last message
+              </button>
+            </div>
           )}
 
           {/* Input — 16px+ font size prevents iOS Safari auto-zoom on focus */}
