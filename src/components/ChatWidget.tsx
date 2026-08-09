@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Streamdown } from "streamdown";
+import { ProjectCard } from "@/components/ProjectCard";
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,8 +97,11 @@ export function ChatWidget() {
               const hasText = textParts.some(
                 (p) => "text" in p && p.text.length > 0
               );
+              const hasToolPart = message.parts.some((p) =>
+                p.type.startsWith("tool-")
+              );
               const showThinking =
-                isLastAssistant && status === "submitted" && !hasText;
+                isLastAssistant && status === "submitted" && !hasText && !hasToolPart;
 
               return (
                 <div
@@ -105,22 +109,69 @@ export function ChatWidget() {
                   className={
                     message.role === "user"
                       ? "ml-auto max-w-[85%] rounded-lg bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm"
-                      : "mr-auto max-w-[85%] rounded-lg bg-black/5 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm transition-opacity duration-200"
+                      : "mr-auto max-w-[85%] rounded-lg bg-black/5 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm transition-opacity duration-200 space-y-2"
                   }
                 >
-                  {showThinking ? (
+                  {showThinking && (
                     <span className="inline-flex gap-1" aria-label="Thinking">
                       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 animate-pulse" />
                       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 animate-pulse [animation-delay:150ms]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 animate-pulse [animation-delay:300ms]" />
                     </span>
-                  ) : (
-                    textParts.map((part, i) =>
-                      "text" in part ? (
-                        <Streamdown key={i}>{part.text}</Streamdown>
-                      ) : null
-                    )
                   )}
+
+                  {message.parts.map((part, i) => {
+                    if (part.type === "text") {
+                      return part.text ? <Streamdown key={i}>{part.text}</Streamdown> : null;
+                    }
+
+                    if (part.type === "tool-getProjectDetails") {
+                      const callId = part.toolCallId;
+                      switch (part.state) {
+                        // Input still being generated — the lightest possible
+                        // placeholder, since we don't know what's being looked
+                        // up yet.
+                        case "input-streaming":
+                          return (
+                            <div
+                              key={callId}
+                              className="h-4 w-32 rounded bg-current/10 animate-pulse"
+                            />
+                          );
+                        // Input is known — name the actual project being
+                        // looked up, not a generic spinner.
+                        case "input-available":
+                          return (
+                            <div
+                              key={callId}
+                              className="text-xs italic opacity-60 flex items-center gap-1.5"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                              Looking up &quot;{part.input.projectName}&quot;...
+                            </div>
+                          );
+                        // Success — the real designed component, not JSON.
+                        case "output-available":
+                          return <ProjectCard key={callId} project={part.output} />;
+                        // Failure — visually distinct from success (warning
+                        // border, not brand styling), designed on purpose
+                        // rather than left to crash or show raw text.
+                        case "output-error":
+                          return (
+                            <div
+                              key={callId}
+                              className="rounded-lg border border-red-400/50 dark:border-red-500/40 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-xs text-red-700 dark:text-red-400"
+                            >
+                              Couldn&apos;t look that project up: {part.errorText}
+                            </div>
+                          );
+                        default:
+                          return null;
+                      }
+                    }
+
+                    return null;
+                  })}
                 </div>
               );
             })}
