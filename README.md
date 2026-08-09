@@ -1,75 +1,70 @@
-# React + TypeScript + Vite
+# Capstone Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal portfolio site — Makonnen B. Mulima. Built with Next.js App Router, TypeScript,
+and Tailwind CSS, deployed on Vercel.
 
-Currently, two official plugins are available:
+Live: [makonnen-mulima-portfolio.vercel.app](https://makonnen-mulima-portfolio.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- Next.js (App Router) — Server Components by default, Client Components only where
+  interactivity requires it
+- TypeScript (strict mode)
+- Tailwind CSS v4
+- AI chat feature powered by Google Gemini via the Vercel AI SDK
+- Deployed on Vercel
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Routes
 
-## Expanding the ESLint configuration
+- `/` — Landing
+- `/projects` — AWS and front-end project case studies
+- `/certificates` — Certifications
+- `/contact` — Bio, contact form, CV download, booking link
+- `/health` — Health-check endpoint (not in nav)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## AI Chat Feature
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+A site-wide chat widget lets visitors ask about projects, certifications, and background.
+Streams responses token by token, with a working stop/retry, and calls a real server-side
+tool for structured project lookups.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Tool contract: `getProjectDetails`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Defined in `src/app/api/chat/route.ts`, backed by structured data in `src/lib/project-data.ts`.
 
+**Name:** `getProjectDetails`
+
+**When it's called:** whenever a visitor asks about one specific named project. The model is
+instructed to always call this rather than answer from its own context, so uncertain or
+unfamiliar project names are handled the same way as real ones — by actually checking, not
+guessing.
+
+**Input schema (Zod):**
+```ts
+z.object({
+  projectName: z.string().describe(
+    "The project name to look up, matching one of the known project titles"
+  ),
+})
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+**Return shape (`ProjectRecord`, on success):**
+```ts
+{
+  title: string;
+  category: "AWS" | "Front-end";
+  summary: string;
+  highlights: string[];   // 2-3 short points, kept intentionally brief
+  hasLiveDemo: boolean;
+}
 ```
+
+**On failure:** if no project matches the given name, `execute()` throws
+`Error("No project found matching "<name>"")`. This is deliberate — it's what lets the UI's
+designed error state (a red-bordered card with the real error message, rendered in
+`ChatWidget.tsx`) actually get exercised, rather than only ever showing the happy path.
+
+**Rendering:** `ChatWidget.tsx` renders all four tool part states distinctly —
+`input-streaming` (a bare pulse placeholder), `input-available` (names the actual project
+being looked up), `output-available` (the real `ProjectCard` component), and `output-error`
+(the red-bordered failure card). None of these fall back to a raw JSON dump.
