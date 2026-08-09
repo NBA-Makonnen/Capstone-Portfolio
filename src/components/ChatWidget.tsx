@@ -127,6 +127,11 @@ export function ChatWidget() {
 
                     if (part.type === "tool-getProjectDetails") {
                       const callId = part.toolCallId;
+                      // TypeScript can't automatically link the tool's types
+                      // defined in route.ts to their usage here, so we assert
+                      // them explicitly rather than build extra cross-file
+                      // type wiring just for this.
+                      const input = part.input as { projectName: string } | undefined;
                       switch (part.state) {
                         // Input still being generated — the lightest possible
                         // placeholder, since we don't know what's being looked
@@ -147,12 +152,17 @@ export function ChatWidget() {
                               className="text-xs italic opacity-60 flex items-center gap-1.5"
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                              Looking up &quot;{part.input.projectName}&quot;...
+                              Looking up &quot;{input?.projectName}&quot;...
                             </div>
                           );
                         // Success — the real designed component, not JSON.
                         case "output-available":
-                          return <ProjectCard key={callId} project={part.output} />;
+                          return (
+                            <ProjectCard
+                              key={callId}
+                              project={part.output as import("@/lib/project-data").ProjectRecord}
+                            />
+                          );
                         // Failure — visually distinct from success (warning
                         // border, not brand styling), designed on purpose
                         // rather than left to crash or show raw text.
