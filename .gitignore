@@ -25,3 +25,11 @@ dist-ssr
 
 # Next.js
 .next/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Testing
+/playwright-report/
+/test-results/
+/coverage/
