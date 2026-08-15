@@ -4,10 +4,10 @@ export default function HomePage() {
   return (
     <section className="flex flex-col items-center justify-center text-center px-6 py-24 gap-6">
       <h1 className="text-4xl font-bold max-w-2xl">
-        I build cloud infrastructure that survives failure — because I've broken it myself and fixed it.
+        A front-end AI engineer focused on building things that work.
       </h1>
       <p className="text-lg opacity-80 max-w-xl">
-        AWS Cloud Practitioner. Currently in a front-end AI engineering internship.
+        AWS Certified Cloud Practitioner. Currently interning at FlyRank AI.
       </p>
       <Link
         href="/projects"
