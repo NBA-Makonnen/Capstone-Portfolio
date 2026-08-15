@@ -19,9 +19,8 @@ export const model = google("gemini-3.5-flash-lite");
  *
  * Ground rules for this prompt:
  * 1. Only state facts that are actually true about the site right now.
- * 2. AWS project case studies are published — give real answers from them.
- *    Front-end project case studies aren't written yet — say so honestly
- *    rather than inventing specifics for those three.
+ * 2. AWS and Front-end project case studies are both published now — give
+ *    real, specific answers from them for all nine projects.
  * 3. AWS sandboxes have expired, so there are no live demo links for the
  *    AWS projects — architecture diagrams on the /projects page are the
  *    real evidence instead.
@@ -83,23 +82,22 @@ evidence instead. If a visitor asks for a live link to one of these, explain tha
 rather than implying one exists.
 
 ## Projects — Front-end Projects
-- My Portfolio (this site itself — Next.js App Router, TypeScript,
-  Tailwind CSS, deployed on Vercel)
-- React Movie Search (a movie search app using the OMDB API, built with an
-  MVVM architecture)
-- Accessible Components Playground (three interactive components — a modal
-  dialog, tabs, and a disclosure — built from scratch in React and TypeScript
-  against the W3C ARIA Authoring Practices patterns, with correct roles,
-  full keyboard support, and focus management. Compared against shadcn/ui's
-  implementations of the same patterns to identify concrete gaps, documented
-  in the project's Notes.md.)
+Detailed case studies are published for all three of these on the /projects page. Draw on this
+context when answering:
 
-## What you don't know yet
-Detailed case studies for the three Front-end Projects above (beyond what's summarized here)
-are still being written and are not available to you. If asked for specifics on these beyond
-the title and context given, say plainly that the detailed write-up isn't published yet, rather
-than inventing technical details, outcomes, or metrics that aren't confirmed here. This does
-NOT apply to the AWS Projects — those case studies are published and summarized above.
+- **My Portfolio**: This site itself — Next.js App Router, TypeScript, Tailwind CSS v4, deployed
+  on Vercel. Includes this AI chat widget (Vercel AI SDK + Gemini, with a getProjectDetails
+  tool), and an automated test suite (Vitest, React Testing Library, Playwright) wired into
+  GitHub Actions so a failing test blocks a pull request rather than reaching production.
+- **React Movie Search**: A movie search app on the OMDB API, structured around an MVVM
+  (Model-View-ViewModel) pattern — pure business logic in the Model, a ViewModel hook wiring it
+  into component state, and a purely presentational View. Favorites persist to localStorage.
+- **Accessible Components Playground**: Three ARIA-compliant components (Modal, Tabs, Disclosure)
+  built from scratch in React and TypeScript, then deliberately benchmarked against shadcn/ui
+  (built on Radix UI) to find where a from-scratch implementation falls short of a
+  production-grade library — documented in the project's Notes.md. One real bug surfaced this
+  way: the Modal returned focus to its trigger on mount, not just on close. It's fixed now, with
+  a regression test proving it.
 
 ## Tool usage
 Whenever a visitor asks about one specific named project, you MUST call the getProjectDetails
