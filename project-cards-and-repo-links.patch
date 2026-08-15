@@ -1,0 +1,84 @@
+diff --git a/src/app/projects/page.tsx b/src/app/projects/page.tsx
+index 6afda3e..ec4b67e 100644
+--- a/src/app/projects/page.tsx
++++ b/src/app/projects/page.tsx
+@@ -52,9 +52,30 @@ const awsProjects = [
+ ];
+ 
+ const frontendProjects = [
+-  "My Portfolio",
+-  "React Movie Search",
+-  "Accessible Components Playground",
++  {
++    title: "My Portfolio",
++    repoUrl: "https://github.com/NBA-Makonnen/Capstone-Portfolio",
++    body: [
++      "This site itself — built with Next.js App Router, TypeScript, and Tailwind CSS v4, deployed on Vercel. Beyond the standard pages, it includes a site-wide AI chat widget built on the Vercel AI SDK and backed by Google's Gemini model, with a custom tool that looks up real project data and renders distinct states for a loading query, a found result, and a genuine error when nothing matches.",
++      "The chat widget, the contact form, and a reusable animated send button are covered by an automated test suite (Vitest, React Testing Library, and Playwright) wired into GitHub Actions, so a failing test blocks a pull request rather than reaching production. The chat's tool-calling states are mocked in tests rather than hitting the real API, and the end-to-end test intercepts the AI response at the network layer using the SDK's actual streaming format.",
++    ],
++  },
++  {
++    title: "React Movie Search",
++    repoUrl: "https://github.com/NBA-Makonnen/React-Movie-Search",
++    body: [
++      "A movie search app built on the OMDB API, structured around an MVVM (Model-View-ViewModel) pattern instead of the flat component structure most React apps default to. Each page's Model holds pure business logic (searching, favoriting) with no React dependency, a ViewModel hook wires that logic into component state, and the View stays purely presentational — a separation that makes the core logic testable independently of any rendered UI.",
++      "Favorites persist to localStorage and stay in sync across the search and favorites views. The search input requires a minimum of two characters before querying the API, and failed or empty responses surface as an inline error message rather than a silent blank screen.",
++    ],
++  },
++  {
++    title: "Accessible Components Playground",
++    repoUrl: "https://github.com/NBA-Makonnen/accessible-components-playground",
++    body: [
++      "Three ARIA-compliant components — a Modal, Tabs, and a Disclosure — built from scratch with React and TypeScript, then deliberately benchmarked against the equivalent components from shadcn/ui (built on Radix UI) to see where a from-scratch implementation actually falls short of a production-grade library.",
++      "The gaps are documented directly in the repo: the custom Modal doesn't use a portal, so it's vulnerable to CSS stacking-context bugs that Radix's DialogPortal avoids; it doesn't lock body scroll the way Radix does automatically; and its focus trap uses a plain DOM query rather than Radix's FocusScope, which handles dynamically-changing children and other edge cases the manual version doesn't.",
++    ],
++  },
+ ];
+ 
+ export default function ProjectsPage() {
+@@ -87,10 +108,26 @@ export default function ProjectsPage() {
+ 
+       <h2 className="text-2xl font-heading mb-4">Front-end Projects</h2>
+       <ul className="grid gap-6 sm:grid-cols-2">
+-        {frontendProjects.map((title) => (
+-          <li key={title} className="border border-brand/20 rounded p-6">
+-            <h3 className="font-heading text-xl">{title}</h3>
+-            <p className="opacity-60 text-sm mt-2">Case study coming soon.</p>
++        {frontendProjects.map((project) => (
++          <li key={project.title} className="border border-brand/20 rounded p-6 flex flex-col h-full">
++            <h3 className="font-heading text-xl mb-3">{project.title}</h3>
++            <div className="flex-1">
++              {project.body.map((paragraph, i) => (
++                <p key={i} className="text-sm opacity-80 mt-2">
++                  {paragraph}
++                </p>
++              ))}
++            </div>
++            <a
++              href={project.repoUrl}
++              target="_blank"
++              rel="noopener noreferrer"
++              aria-label={`View ${project.title} repository on GitHub`}
++              className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-brand dark:text-brand-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
++            >
++              View repo
++              <span aria-hidden="true">↗</span>
++            </a>
+           </li>
+         ))}
+       </ul>
+diff --git a/src/lib/project-data.ts b/src/lib/project-data.ts
+index 51e690d..45b752d 100644
+--- a/src/lib/project-data.ts
++++ b/src/lib/project-data.ts
+@@ -96,8 +96,8 @@ export const projects: ProjectRecord[] = [
+     summary:
+       "Three ARIA-compliant components (modal, tabs, disclosure) built from scratch, compared against shadcn/ui.",
+     highlights: [
+-      "Correct roles, full keyboard support, and focus management on all three",
+-      "Documented concrete gaps against shadcn/ui's implementations in Notes.md",
++      "Correct roles and full keyboard support on all three components",
++      "Found and fixed a focus-management bug in the Modal, with a regression test proving it",
+     ],
+     hasLiveDemo: false,
+   },

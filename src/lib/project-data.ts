@@ -96,8 +96,8 @@ export const projects: ProjectRecord[] = [
     summary:
       "Three ARIA-compliant components (modal, tabs, disclosure) built from scratch, compared against shadcn/ui.",
     highlights: [
-      "Correct roles, full keyboard support, and focus management on all three",
-      "Documented concrete gaps against shadcn/ui's implementations in Notes.md",
+      "Correct roles and full keyboard support on all three components",
+      "Found and fixed a focus-management bug in the Modal, with a regression test proving it",
     ],
     hasLiveDemo: false,
   },
