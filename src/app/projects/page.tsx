@@ -123,7 +123,7 @@ export default function ProjectsPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`View ${project.title} repository on GitHub`}
-              className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-brand dark:text-brand-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
+              className="mt-4 inline-flex items-center justify-center gap-1.5 self-start rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-ink dark:text-ink-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
             >
               View repo
               <span aria-hidden="true">↗</span>

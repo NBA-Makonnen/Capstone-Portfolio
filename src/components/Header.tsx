@@ -36,7 +36,7 @@ export function Header() {
         </div>
 
         <button
-          className="md:hidden flex flex-col justify-center gap-1.5 w-8 h-8"
+          className="md:hidden flex flex-col items-center justify-center gap-1.5 w-11 h-11 -mr-1.5"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
           aria-expanded={isOpen}
