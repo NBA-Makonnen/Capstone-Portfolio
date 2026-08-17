@@ -33,3 +33,6 @@ dist-ssr
 /playwright-report/
 /test-results/
 /coverage/
+
+# Review patch files (should never be committed to history)
+*.patch
