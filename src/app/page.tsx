@@ -11,7 +11,7 @@ export default function HomePage() {
       </p>
       <Link
         href="/projects"
-        className="bg-brand dark:bg-brand-dark text-white px-6 py-3 rounded font-body"
+        className="bg-brand dark:bg-brand-dark text-white px-6 py-3 rounded font-body hover:bg-brand/90 dark:hover:bg-brand-dark/90 transition-colors"
       >
         See the work
       </Link>
