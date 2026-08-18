@@ -11,7 +11,7 @@ export default function ContactPage() {
         </p>
         <a
           href="/resume.pdf"
-          className="inline-block mt-4 rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-brand dark:text-brand-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
+          className="inline-block mt-4 rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-ink dark:text-ink-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
         >
           Download CV
         </a>
@@ -19,7 +19,7 @@ export default function ContactPage() {
           href="https://calendly.com/bundamulima/30min"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-4 ml-3 rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-brand dark:text-brand-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
+          className="inline-block mt-4 ml-3 rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-ink dark:text-ink-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
         >
           Book a call
         </a>
