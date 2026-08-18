@@ -20,6 +20,8 @@ export function validateForm(data: FormData): FormErrors {
 
   if (!data.name.trim()) {
     errors.name = "Name is required.";
+  } else if (data.name.trim().length > 100) {
+    errors.name = "Name must be under 100 characters.";
   }
 
   if (!data.email.trim()) {
@@ -47,6 +49,7 @@ export function ContactForm() {
     email: false,
     message: false,
   });
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const handleBlur = (field: keyof FormData) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -55,15 +58,19 @@ export function ContactForm() {
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setHasSubmitted(false);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (hasSubmitted) return;
+
     const validationErrors = validateForm(formData);
     setErrors(validationErrors);
     setTouched({ name: true, email: true, message: true });
 
     if (Object.keys(validationErrors).length === 0) {
+      setHasSubmitted(true);
       console.log("Contact form submitted:", formData);
     }
   };
@@ -112,7 +119,7 @@ export function ContactForm() {
         {errors.message && touched.message && <p id="message-error" className="text-red-600 text-sm mt-1">{errors.message}</p>}
       </div>
 
-      <button type="submit" className="bg-black text-white px-4 py-2 rounded">Send</button>
+      <button type="submit" disabled={hasSubmitted} className="bg-black text-white px-4 py-2 rounded disabled:opacity-50">Send</button>
     </form>
   );
 }

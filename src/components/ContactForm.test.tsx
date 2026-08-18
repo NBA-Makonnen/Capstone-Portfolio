@@ -70,4 +70,38 @@ describe("ContactForm", () => {
       expect.objectContaining({ name: "Jane Doe", email: "jane@example.com" })
     );
   });
+
+  it("disables Send after a valid submission and ignores a rapid second click", async () => {
+    const user = userEvent.setup();
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    render(<ContactForm />);
+
+    await user.type(screen.getByLabelText("Name"), "Jane Doe");
+    await user.type(screen.getByLabelText("Email"), "jane@example.com");
+    await user.type(screen.getByLabelText("Message"), "This is a valid message.");
+
+    const sendButton = screen.getByRole("button", { name: "Send" });
+    await user.click(sendButton);
+    expect(sendButton).toBeDisabled();
+
+    await user.click(sendButton);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-enables Send once the user edits a field after submitting", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    render(<ContactForm />);
+
+    await user.type(screen.getByLabelText("Name"), "Jane Doe");
+    await user.type(screen.getByLabelText("Email"), "jane@example.com");
+    await user.type(screen.getByLabelText("Message"), "This is a valid message.");
+
+    const sendButton = screen.getByRole("button", { name: "Send" });
+    await user.click(sendButton);
+    expect(sendButton).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Message"), " More.");
+    expect(sendButton).not.toBeDisabled();
+  });
 });
