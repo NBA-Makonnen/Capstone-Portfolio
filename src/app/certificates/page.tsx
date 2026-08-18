@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Certificates — Makonnen Mulima",
+  description: "Completed certifications for Makonnen Mulima, front-end AI engineer and AWS Certified Cloud Practitioner.",
+};
+
 const certifications = [
   { name: "Python Developer", date: "July 2026" },
   { name: "Full Stack Development", date: "July 2025" },

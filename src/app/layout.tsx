@@ -10,8 +10,23 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Makonnen Mulima",
-  description: "Welcome to My Portfolio",
+  title: "Makonnen Mulima — Front-end AI Engineer",
+  description:
+    "Portfolio of Makonnen Mulima, a front-end AI engineer and AWS Certified Cloud Practitioner. Projects, AWS case studies, and an AI-powered chat assistant.",
+  openGraph: {
+    title: "Makonnen Mulima — Front-end AI Engineer",
+    description:
+      "Portfolio of Makonnen Mulima, a front-end AI engineer and AWS Certified Cloud Practitioner. Projects, AWS case studies, and an AI-powered chat assistant.",
+    url: "https://makonnen-mulima-portfolio.vercel.app",
+    siteName: "Makonnen Mulima",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Makonnen Mulima — Front-end AI Engineer",
+    description:
+      "Portfolio of Makonnen Mulima, a front-end AI engineer and AWS Certified Cloud Practitioner. Projects, AWS case studies, and an AI-powered chat assistant.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

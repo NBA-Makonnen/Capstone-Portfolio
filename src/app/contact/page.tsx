@@ -1,4 +1,10 @@
 import { ContactForm } from "@/components/ContactForm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact — Makonnen Mulima",
+  description: "Get in touch with Makonnen Mulima — book a call, download the resume, or send a message.",
+};
 
 export default function ContactPage() {
   return (

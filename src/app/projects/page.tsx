@@ -1,4 +1,11 @@
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects — Makonnen Mulima",
+  description:
+    "AWS cloud projects and front-end engineering projects by Makonnen Mulima, including case studies and source code.",
+};
 
 const awsProjects = [
   {
