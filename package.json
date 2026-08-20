@@ -14,13 +14,17 @@
   "dependencies": {
     "@ai-sdk/google": "^4.0.31",
     "@ai-sdk/react": "^4.0.51",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.48",
+    "leva": "^0.10.1",
     "motion": "^13.1.0",
     "next": "16.2.11",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "streamdown": "^2.5.0"
+    "streamdown": "^2.5.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -31,6 +35,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
