@@ -19,7 +19,7 @@ export default function ContactPage() {
           href="/resume.pdf"
           className="inline-block mt-4 rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-ink dark:text-ink-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors"
         >
-          Download CV
+          Download CV <span className="opacity-70">(PDF)</span>
         </a>
         <a
           href="https://calendly.com/bundamulima/30min"

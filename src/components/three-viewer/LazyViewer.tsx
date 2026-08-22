@@ -17,7 +17,7 @@ const ViewerScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full w-full items-center justify-center text-sm opacity-60">
+      <div className="flex h-full w-full items-center justify-center text-sm opacity-70">
         Loading scene&hellip;
       </div>
     ),
@@ -158,7 +158,7 @@ export function LazyViewer() {
       </div>
 
       <div className="max-w-xl mx-auto mt-3 flex items-center justify-between text-xs gap-3">
-        <p className="opacity-60">
+        <p className="opacity-70">
           Drag and drop a .glb file onto the scene, or{" "}
           <button
             type="button"

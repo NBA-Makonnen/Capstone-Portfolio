@@ -47,7 +47,7 @@ export default function ButtonDemoPage() {
 
       <div className="flex items-center gap-4 mb-10">
         <SendButton status={status} onClick={handleSend} />
-        <span className="text-xs opacity-50">Real send &mdash; 20% chance of failure</span>
+        <span className="text-xs opacity-70">Real send &mdash; 20% chance of failure</span>
       </div>
 
       <div className="flex gap-3 border-t border-brand/20 dark:border-brand-dark/30 pt-6">
@@ -67,7 +67,7 @@ export default function ButtonDemoPage() {
         </button>
       </div>
 
-      <div className="mt-12 text-xs opacity-60 space-y-2 border-t border-brand/20 dark:border-brand-dark/30 pt-6">
+      <div className="mt-12 text-xs opacity-70 space-y-2 border-t border-brand/20 dark:border-brand-dark/30 pt-6">
         <p className="font-heading font-bold text-sm opacity-100">
           Duration &amp; easing notes
         </p>

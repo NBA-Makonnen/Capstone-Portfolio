@@ -24,7 +24,7 @@ export default function CertificatesPage() {
         {certifications.map((cert) => (
           <li key={cert.name} className="border border-brand/20 rounded p-4">
             <h2 className="font-heading">{cert.name}</h2>
-            <p className="opacity-60 text-sm">{cert.date}</p>
+            <p className="opacity-70 text-sm">{cert.date}</p>
           </li>
         ))}
       </ul>

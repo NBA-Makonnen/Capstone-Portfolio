@@ -6,7 +6,12 @@
   --color-canvas-dark: #000000;
   --color-ink: #262433;
   --color-ink-dark: #FFFFFF;
-  --color-brand: #8670A3;
+  /* 2% darker than the original #8670A3 — same hue/saturation, visually
+     identical, but white text on this background now clears WCAG AA
+     (4.68:1 vs the original's 4.32:1) for every bg-brand + text-white
+     usage site-wide (CTA button, chat toggle, chat bubbles, category
+     badges), instead of patching each usage individually. */
+  --color-brand: #816A9F;
   --color-brand-dark: #8E0000;
   --color-accent: #FEDADA;
 

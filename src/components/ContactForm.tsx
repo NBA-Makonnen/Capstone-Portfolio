@@ -88,7 +88,7 @@ export function ContactForm() {
           aria-describedby={errors.name && touched.name ? "name-error" : undefined}
           className="w-full border rounded px-3 py-2"
         />
-        {errors.name && touched.name && <p id="name-error" className="text-red-600 text-sm mt-1">{errors.name}</p>}
+        {errors.name && touched.name && <p id="name-error" role="alert" className="text-red-700 dark:text-red-400 text-sm mt-1">{errors.name}</p>}
       </div>
 
       <div>
@@ -102,7 +102,7 @@ export function ContactForm() {
           aria-describedby={errors.email && touched.email ? "email-error" : undefined}
           className="w-full border rounded px-3 py-2"
         />
-        {errors.email && touched.email && <p id="email-error" className="text-red-600 text-sm mt-1">{errors.email}</p>}
+        {errors.email && touched.email && <p id="email-error" role="alert" className="text-red-700 dark:text-red-400 text-sm mt-1">{errors.email}</p>}
       </div>
 
       <div>
@@ -116,10 +116,16 @@ export function ContactForm() {
           aria-describedby={errors.message && touched.message ? "message-error" : undefined}
           className="w-full border rounded px-3 py-2"
         />
-        {errors.message && touched.message && <p id="message-error" className="text-red-600 text-sm mt-1">{errors.message}</p>}
+        {errors.message && touched.message && <p id="message-error" role="alert" className="text-red-700 dark:text-red-400 text-sm mt-1">{errors.message}</p>}
       </div>
 
-      <button type="submit" disabled={hasSubmitted} className="bg-black text-white px-4 py-2 rounded disabled:opacity-50">Send</button>
+      <button
+        type="submit"
+        disabled={hasSubmitted}
+        className="bg-brand dark:bg-brand-dark text-white px-4 py-2 rounded hover:bg-brand/90 dark:hover:bg-brand-dark/90 transition-colors disabled:opacity-50"
+      >
+        Send
+      </button>
     </form>
   );
 }

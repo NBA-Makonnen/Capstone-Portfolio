@@ -17,7 +17,7 @@ export default function ThreeDViewerPage() {
 
       <LazyViewer />
 
-      <p className="max-w-xl mx-auto mt-4 text-xs opacity-50">
+      <p className="max-w-xl mx-auto mt-4 text-xs opacity-70">
         Default model: &ldquo;Damaged Helmet&rdquo; by ctxwing, licensed{" "}
         <a
           href="https://creativecommons.org/licenses/by/4.0/legalcode"
