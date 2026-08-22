@@ -36,7 +36,7 @@ test("visitor can open the chat, ask a question, and see a streamed answer", asy
 
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Ask about my work" }).click();
+  await page.getByRole("button", { name: "Ask me about my work" }).click();
   const chat = page.getByRole("region", { name: "Chat" });
   await expect(chat).toBeVisible();
 
