@@ -17,7 +17,7 @@ export function ProjectCard({ project }: { project: ProjectRecord }) {
           ))}
         </ul>
         {!project.hasLiveDemo && (
-          <p className="text-[10px] opacity-50 mt-2 italic">No live demo link available.</p>
+          <p className="text-[10px] opacity-70 mt-2 italic">No live demo link available.</p>
         )}
       </div>
     </div>

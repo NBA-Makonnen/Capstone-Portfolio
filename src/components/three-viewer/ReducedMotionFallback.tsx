@@ -19,7 +19,7 @@ export function ReducedMotionFallback({
       />
       <div className="max-w-xs">
         <p className="text-sm font-medium mb-1">Interactive scene paused</p>
-        <p className="text-xs opacity-60">
+        <p className="text-xs opacity-70">
           Your browser is set to reduce motion (or save data), so the 3D
           scene didn&apos;t load automatically.
         </p>

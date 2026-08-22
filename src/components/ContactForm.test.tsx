@@ -28,6 +28,10 @@ describe("ContactForm", () => {
     const error = screen.getByText("Name is required.");
     expect(error).toBeInTheDocument();
     expect(nameInput).toHaveAccessibleDescription("Name is required.");
+    // role="alert" makes this an assertive live region so screen readers
+    // announce it the moment it appears, not only when the field regains
+    // focus (aria-describedby alone doesn't announce proactively).
+    expect(screen.getByRole("alert")).toHaveTextContent("Name is required.");
   });
 
   it("flags an invalid email format after blur", async () => {
