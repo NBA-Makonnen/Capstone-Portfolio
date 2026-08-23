@@ -5,15 +5,21 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Streamdown } from "streamdown";
 import { ProjectCard } from "@/components/ProjectCard";
+import { MAX_MESSAGE_CHARS, MAX_MESSAGES } from "@/lib/chat-limits";
 
 export function ChatPanel() {
   const [input, setInput] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const { messages, sendMessage, status, stop, error, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
   const isBusy = status === "submitted" || status === "streaming";
+  // >= rather than > because the count that matters is "how many messages
+  // would the next request send" — once it hits the cap, sending again
+  // would exceed it.
+  const reachedConversationLimit = messages.length >= MAX_MESSAGES;
 
   // The text input becomes `disabled` while busy (see below), which — if the
   // user was focused there, which they almost always are right after
@@ -58,9 +64,21 @@ export function ChatPanel() {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed || isBusy) return;
+    if (trimmed.length > MAX_MESSAGE_CHARS) {
+      setValidationError(
+        `Messages are limited to ${MAX_MESSAGE_CHARS} characters (this one is ${trimmed.length}).`
+      );
+      return;
+    }
+    setValidationError(null);
     sendMessage({ text: trimmed });
     setInput("");
     setIsPinnedToBottom(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    if (validationError) setValidationError(null);
   };
 
   return (
@@ -199,6 +217,12 @@ export function ChatPanel() {
         </button>
       )}
 
+      {validationError && (
+        <div className="px-4 pb-2">
+          <p className="text-xs text-red-700 dark:text-red-400">{validationError}</p>
+        </div>
+      )}
+
       {error && !isBusy && (
         <div className="px-4 pb-2 flex items-center justify-between gap-2">
           <p className="text-xs text-red-700 dark:text-red-400">
@@ -215,37 +239,43 @@ export function ChatPanel() {
       )}
 
       {/* Input — 16px+ font size prevents iOS Safari auto-zoom on focus */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-brand/20 dark:border-brand-dark/30 p-2"
-      >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={isBusy}
-          placeholder="Ask a question..."
-          className="flex-1 rounded border border-brand/20 dark:border-brand-dark/30 bg-canvas dark:bg-canvas-dark text-ink dark:text-ink-dark px-3 py-2 text-base disabled:opacity-50"
-          style={{ fontSize: 16 }}
-        />
-        {isBusy ? (
-          <button
-            ref={stopButtonRef}
-            type="button"
-            onClick={stop}
-            className="rounded bg-black/10 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm font-heading"
-          >
-            Stop
-          </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="rounded bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm font-heading disabled:opacity-50"
-          >
-            Send
-          </button>
-        )}
-      </form>
+      {reachedConversationLimit ? (
+        <p className="border-t border-brand/20 dark:border-brand-dark/30 p-3 text-xs text-center opacity-70">
+          This conversation has reached its message limit. Refresh the page to start a new one.
+        </p>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="flex items-center gap-2 border-t border-brand/20 dark:border-brand-dark/30 p-2"
+        >
+          <input
+            value={input}
+            onChange={handleInputChange}
+            disabled={isBusy}
+            placeholder="Ask a question..."
+            className="flex-1 rounded border border-brand/20 dark:border-brand-dark/30 bg-canvas dark:bg-canvas-dark text-ink dark:text-ink-dark px-3 py-2 text-base disabled:opacity-50"
+            style={{ fontSize: 16 }}
+          />
+          {isBusy ? (
+            <button
+              ref={stopButtonRef}
+              type="button"
+              onClick={stop}
+              className="rounded bg-black/10 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm font-heading"
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!input.trim()}
+              className="rounded bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm font-heading disabled:opacity-50"
+            >
+              Send
+            </button>
+          )}
+        </form>
+      )}
     </div>
   );
 }
