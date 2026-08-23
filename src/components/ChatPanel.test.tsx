@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useChat, type UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import type { ProjectRecord } from "@/lib/project-data";
+import { MAX_MESSAGE_CHARS, MAX_MESSAGES } from "@/lib/chat-limits";
 import { ChatPanel } from "./ChatPanel";
 
 // The chat message renderer's job is to turn `messages`/`status`/`error`
@@ -242,5 +243,53 @@ describe("ChatPanel", () => {
     render(<ChatPanel />);
 
     expect(screen.getByRole("button", { name: "Send" })).toBeDisabled();
+  });
+
+  it("shows a validation error and does not send when the message exceeds the character limit", () => {
+    mockUseChat.mockReturnValue(makeChatHelpers({ status: "ready" }));
+    render(<ChatPanel />);
+    const helpers = mockUseChat.mock.results[0].value as UseChatHelpers<UIMessage>;
+
+    const input = screen.getByPlaceholderText("Ask a question...");
+    const tooLong = "a".repeat(MAX_MESSAGE_CHARS + 1);
+    fireEvent.change(input, { target: { value: tooLong } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    expect(
+      screen.getByText(
+        `Messages are limited to ${MAX_MESSAGE_CHARS} characters (this one is ${tooLong.length}).`
+      )
+    ).toBeInTheDocument();
+    expect(helpers.sendMessage).not.toHaveBeenCalled();
+  });
+
+  it("clears the validation error once the user edits the message", () => {
+    mockUseChat.mockReturnValue(makeChatHelpers({ status: "ready" }));
+    render(<ChatPanel />);
+
+    const input = screen.getByPlaceholderText("Ask a question...");
+    fireEvent.change(input, { target: { value: "a".repeat(MAX_MESSAGE_CHARS + 1) } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    expect(screen.getByText(/Messages are limited to/)).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "a shorter message" } });
+    expect(screen.queryByText(/Messages are limited to/)).not.toBeInTheDocument();
+  });
+
+  it("replaces the input with a limit-reached message once the conversation hits its message cap", () => {
+    const messages = Array.from({ length: MAX_MESSAGES }, (_, i) => ({
+      id: `${i}`,
+      role: i % 2 === 0 ? "user" : "assistant",
+      parts: [{ type: "text", text: "hi" }],
+    })) as UIMessage[];
+    mockUseChat.mockReturnValue(makeChatHelpers({ status: "ready", messages }));
+    render(<ChatPanel />);
+
+    expect(
+      screen.getByText(
+        "This conversation has reached its message limit. Refresh the page to start a new one."
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Ask a question...")).not.toBeInTheDocument();
   });
 });
