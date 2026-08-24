@@ -18,21 +18,8 @@ export default function ThreeDViewerPage() {
       <LazyViewer />
 
       <p className="max-w-xl mx-auto mt-4 text-xs opacity-70">
-        Default model: &ldquo;Damaged Helmet&rdquo; by ctxwing, licensed{" "}
-        <a
-          href="https://creativecommons.org/licenses/by/4.0/legalcode"
-          className="underline underline-offset-2"
-        >
-          CC BY 4.0
-        </a>
-        , via the{" "}
-        <a
-          href="https://github.com/KhronosGroup/glTF-Sample-Assets"
-          className="underline underline-offset-2"
-        >
-          Khronos glTF Sample Assets
-        </a>{" "}
-        (recompressed for this page — see README for details).
+        Default model: &ldquo;My Logo&rdquo; — personal work, compressed for this page (see
+        README for details).
       </p>
     </section>
   );

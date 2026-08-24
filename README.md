@@ -220,7 +220,8 @@ whatever it gave back.
 
 ## Credits
 
-Default 3D model: [DamagedHelmet](https://github.com/KhronosGroup/glTF-Sample-Assets) by
-ctxwing, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), via the Khronos
-glTF Sample Assets — recompressed for this page (Draco geometry + WebP textures, 3.77MB →
-442KB).
+Default 3D model: "My Logo" — a personal extruded-wordmark model, not third-party licensed
+content, so no external attribution is required. Compressed for this page: welded duplicate
+vertices and Draco geometry compression (no texture recompression needed — the model has none),
+1.36MB → 35.4KB, with the full triangle count and letterform geometry preserved exactly (no
+mesh decimation/simplification applied, since that would round off the model's sharp edges).
