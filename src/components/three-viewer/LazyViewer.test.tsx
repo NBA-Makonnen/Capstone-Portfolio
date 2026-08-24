@@ -40,7 +40,7 @@ describe("LazyViewer", () => {
   it("loads the default model and shows no reset button initially", () => {
     render(<LazyViewer />);
     const scene = screen.getByTestId("viewer-scene");
-    expect(scene).toHaveAttribute("data-model-url", "/models/helmet.glb");
+    expect(scene).toHaveAttribute("data-model-url", "/models/mbm-logo.glb");
     expect(screen.queryByText("Reset to default")).not.toBeInTheDocument();
   });
 
@@ -102,7 +102,7 @@ describe("LazyViewer", () => {
     await user.click(screen.getByText("Reset to default"));
 
     const scene = screen.getByTestId("viewer-scene");
-    expect(scene).toHaveAttribute("data-model-url", "/models/helmet.glb");
+    expect(scene).toHaveAttribute("data-model-url", "/models/mbm-logo.glb");
     expect(screen.queryByText("Reset to default")).not.toBeInTheDocument();
   });
 
