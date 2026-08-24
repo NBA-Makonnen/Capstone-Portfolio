@@ -1,115 +1,226 @@
 # Capstone Portfolio
 
-Personal portfolio site — Makonnen B. Mulima. Built with Next.js App Router, TypeScript,
+Personal portfolio site for Makonnen B. Mulima — AWS Certified Cloud Practitioner and
+Front-end AI Engineering intern at FlyRank AI. Built with Next.js App Router, TypeScript,
 and Tailwind CSS, deployed on Vercel.
 
-Live: [makonnen-mulima-portfolio.vercel.app](https://makonnen-mulima-portfolio.vercel.app)
+**Live:** [makonnen.is-a.dev](https://makonnen.is-a.dev) (also at
+[makonnen-mulima-portfolio.vercel.app](https://makonnen-mulima-portfolio.vercel.app))
 
-## Stack
+## What this is
 
-- Next.js (App Router) — Server Components by default, Client Components only where
-  interactivity requires it
-- TypeScript (strict mode)
-- Tailwind CSS v4
-- AI chat feature powered by Google Gemini via the Vercel AI SDK
-- 3D viewer powered by React Three Fiber, drei, and leva
-- Deployed on Vercel
+A recruiter- and hiring-manager-facing portfolio: project case studies (both AWS console
+labs and front-end builds), certifications, and a way to get in touch — plus two things
+built specifically to demonstrate front-end + AI skills rather than just list them. A chat
+widget answers questions about the projects using a real server-side tool call instead of
+just echoing the system prompt back, and a drag-and-drop 3D viewer renders arbitrary glTF
+models a visitor drops onto it. The goal was a portfolio that's actually a working
+demonstration of the skills it's listing, not just a description of them.
 
-## Routes
+## Screenshots
 
-- `/` — Landing
-- `/projects` — AWS and front-end project case studies
-- `/certificates` — Certifications
-- `/contact` — Bio, contact form, CV download, booking link
-- `/health` — Health-check endpoint (not in nav)
-- `/3d-viewer` — Interactive glTF viewer and material configurator (not in nav)
+Real before/after accessibility and performance evidence from the audit lives in
+[`docs/audit-screenshots/`](./docs/audit-screenshots) (Lighthouse and WAVE, before and
+after, for every page) — see [`AUDIT.md`](./AUDIT.md) for the full writeup.
 
-## AI Chat Feature
+<!-- TODO: add 2-3 product screenshots here (homepage, the chat widget mid-conversation,
+     /3d-viewer with a model loaded) before submitting — these need to come from an actual
+     browser session, not something that can be generated from the codebase. -->
+
+## Setup & run
+
+```bash
+git clone https://github.com/NBA-Makonnen/Capstone-Portfolio.git
+cd Capstone-Portfolio
+npm install
+cp .env.example .env.local   # then fill in GOOGLE_GENERATIVE_AI_API_KEY, see below
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). The site works without the API key —
+every route except the chat widget's actual replies renders and functions normally, and the
+chat widget just shows its existing error+retry state instead of a response.
+
+**Other scripts:**
+
+| Command | What it does |
+|---|---|
+| `npm run build` | Production build |
+| `npm start` | Serve the production build locally |
+| `npm run lint` | ESLint |
+| `npm test` | Run the Vitest + RTL suite once |
+| `npm run test:watch` | Vitest in watch mode |
+| `npm run test:e2e` | Playwright end-to-end test |
+
+## Environment variables
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Yes, for the chat feature | Gemini API key for the AI chat widget. Read automatically by `@ai-sdk/google` — get a free key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Without it, the chat widget still renders but every message hits its existing error state. |
+
+Set locally in `.env.local` (gitignored). In production, set it in the Vercel project's
+Environment Variables settings for both the Production and Preview environments.
+
+## Architecture overview
+
+```
+src/
+├── app/
+│   ├── page.tsx                 # Home
+│   ├── projects/page.tsx        # AWS + front-end project case studies
+│   ├── certificates/page.tsx    # Certifications
+│   ├── contact/page.tsx         # Bio, ContactForm, CV download, Calendly link
+│   ├── health/page.tsx          # Server Component health check (not in nav)
+│   ├── 3d-viewer/page.tsx       # glTF viewer route (not in nav)
+│   ├── button-demo/page.tsx     # SendButton component demo (not in nav)
+│   ├── api/chat/route.ts        # Chat API route — streaming, tool calls, abuse guards
+│   ├── error.tsx                # Route-segment error boundary
+│   └── global-error.tsx         # Catches errors thrown by the root layout itself
+├── components/
+│   ├── ChatWidget.tsx           # Always-visible toggle button (lightweight, no heavy deps)
+│   ├── ChatPanel.tsx            # Everything interactive — lazy-loaded, mounted on open only
+│   ├── LazyViewer.tsx           # Lazy-loaded wrapper around the R3F/drei/leva 3D scene
+│   ├── ProjectCard.tsx          # Renders getProjectDetails' tool output
+│   ├── ContactForm.tsx          # Validated, not wired to a real backend (see Known limitations)
+│   └── SendButton.tsx           # Reusable animated button (idle/hover/loading/success/error)
+└── lib/
+    ├── ai-config.ts             # Model choice + system prompt
+    ├── project-data.ts          # Structured project data the chat tool looks up
+    └── chat-limits.ts           # Shared message/conversation caps (client + server)
+```
+
+**Why the ChatWidget/ChatPanel split:** the panel pulls in the full AI SDK, Streamdown, and
+the chat UI — code that shouldn't ship to a visitor who never opens the chat. `ChatWidget` is
+the only thing in the initial bundle; `ChatPanel` loads via `next/dynamic({ ssr: false })`
+only once the widget is clicked, and idle-time-prefetches so that first click still feels
+instant. This cut a real, measured 464KB out of every other page's bundle.
+
+## AI integration
 
 A site-wide chat widget lets visitors ask about projects, certifications, and background.
-Streams responses token by token, with a working stop/retry, and calls a real server-side
-tool for structured project lookups.
+Model: Google Gemini 3.5 Flash-Lite via the Vercel AI SDK — chosen over Anthropic's API
+(mentor-approved substitution) since Anthropic doesn't currently offer an ongoing free tier,
+and Flash-Lite's free-tier limits comfortably cover a low-traffic portfolio assistant that
+isn't doing multi-step reasoning. Responses stream token-by-token, with a working stop and
+regenerate (regenerate retries only the failed exchange, not the whole conversation).
+
+**Why a tool call, not just a system prompt:** a plain system-prompted chatbot either
+hallucinates project details or has to cram every project's full description into every
+request. Instead, the model calls a real server-side tool to look up structured data on
+demand — the same pattern a production app would use for any external data source, just
+backed by a local file instead of a database.
 
 ### Tool contract: `getProjectDetails`
 
-Defined in `src/app/api/chat/route.ts`, backed by structured data in `src/lib/project-data.ts`.
+Defined in `src/app/api/chat/route.ts`, backed by `src/lib/project-data.ts`.
 
-**Name:** `getProjectDetails`
+- **Input (Zod):** `z.object({ projectName: z.string() })`
+- **Success:** returns a `ProjectRecord` — `title`, `category`, `summary`, `highlights[]`, `hasLiveDemo`
+- **Failure:** throws `Error('No project found matching "<name>"')` if nothing matches — this
+  is deliberate, so the UI's designed error state (a red-bordered card with the real message)
+  actually gets exercised instead of only ever showing the happy path
+- **Rendering:** `ChatPanel.tsx` renders all four tool-part states distinctly —
+  `input-streaming`, `input-available`, `output-available` (a real `ProjectCard`), and
+  `output-error` — none fall back to a raw JSON dump
 
-**When it's called:** whenever a visitor asks about one specific named project. The model is
-instructed to always call this rather than answer from its own context, so uncertain or
-unfamiliar project names are handled the same way as real ones — by actually checking, not
-guessing.
+### Abuse protection
 
-**Input schema (Zod):**
-```ts
-z.object({
-  projectName: z.string().describe(
-    "The project name to look up, matching one of the known project titles"
-  ),
-})
-```
+`src/lib/chat-limits.ts` caps message length (2,000 characters) and conversation length (40
+messages), enforced both client-side (so the UI never lets a request get that far) and
+server-side in the route itself (so calling the API directly bypasses nothing). This is
+**not** real rate limiting — see Known limitations.
 
-**Return shape (`ProjectRecord`, on success):**
-```ts
-{
-  title: string;
-  category: "AWS" | "Front-end";
-  summary: string;
-  highlights: string[];   // 2-3 short points, kept intentionally brief
-  hasLiveDemo: boolean;
-}
-```
+## Key decisions
 
-**On failure:** if no project matches the given name, `execute()` throws
-`Error("No project found matching "<name>"")`. This is deliberate — it's what lets the UI's
-designed error state (a red-bordered card with the real error message, rendered in
-`ChatWidget.tsx`) actually get exercised, rather than only ever showing the happy path.
+- **Gemini over Anthropic** for the chat model — see AI integration above.
+- **Input caps over a real rate limiter** for chat abuse protection — no shared store (Redis/
+  Vercel KV) needed, at the cost of not stopping a scripted attacker from opening many
+  separate conversations. Accepted tradeoff for a low-traffic personal site; see Known
+  limitations.
+- **`makonnen.is-a.dev` over a paid personal domain or waiting on FlyRank's Ops-provisioned
+  subdomain** — free, immediate, and under my own control; a DNS walkthrough for the eventual
+  FlyRank subdomain is documented for whenever Ops provisions it.
+- **Contact form stays unwired to a real backend** for now — a deliberate, documented known
+  limitation rather than a half-built feature; real contact currently happens via the
+  Calendly link or resume/LinkedIn.
+- **`--color-brand` moved 2% darker** (`#8670A3` → `#816A9F`, same hue/saturation) to clear
+  WCAG AA contrast for white text — one token change fixed four separate failing UI elements
+  at once (CTA, chat toggle, chat bubbles, project badges) because they all read from it.
 
-**Rendering:** `ChatWidget.tsx` renders all four tool part states distinctly —
-`input-streaming` (a bare pulse placeholder), `input-available` (names the actual project
-being looked up), `output-available` (the real `ProjectCard` component), and `output-error`
-(the red-bordered failure card). None of these fall back to a raw JSON dump.
+## Testing
 
-## 3D Viewer
+Vitest + React Testing Library + Playwright, wired into CI. 47 unit/component tests across 9
+test files, plus 1 Playwright end-to-end test covering the primary user flow. `LazyViewer` and
+`ChatWidget`'s tests mock `next/dynamic` to test the lazy-loaded components synchronously
+rather than skipping them.
 
-`/3d-viewer` is a drag-and-drop glTF viewer with a live material configurator, built with
-[React Three Fiber](https://r3f.docs.pmnd.rs/) + [drei](https://github.com/pmndrs/drei) +
-[leva](https://github.com/pmndrs/leva). Ships with one default model preloaded
-(`public/models/helmet.glb`) so the page is never empty; drop or browse to a `.glb` of your
-own to swap it in.
+## Performance & accessibility
 
-**What's implemented:**
+Audited with Lighthouse (mobile) and WAVE against every page; full before/after numbers and
+screenshots in [`AUDIT.md`](./AUDIT.md). Headline results:
 
-- **Configurator** (leva panel): base color, metalness, roughness, wireframe toggle,
-  environment preset (10 options), auto-rotate speed. Every mesh's material is cloned before
-  any control is applied, so the changes never mutate the underlying cached model.
-- **Custom models**: drag-and-drop onto the scene, or "browse files" (needed for touch
-  devices — dragging a file from an OS file picker onto a mobile browser isn't a reliable
-  interaction the way it is on desktop). Validates the extension (`.glb` only) and a 25MB
-  size cap before attempting to load; a file that fails to parse as valid glTF is caught by
-  an error boundary and reverts to the default model with a message, instead of breaking the
-  page.
-- **Responsible loading**: the Canvas (and the whole three/R3F/drei/leva bundle) is
-  lazy-loaded via `next/dynamic({ ssr: false })`, so it never ships on any page but this one.
-  Visitors with `prefers-reduced-motion: reduce` or Data Saver (`navigator.connection.saveData`)
-  enabled see a static poster of the default model instead, with an explicit "Load interactive
-  3D scene anyway" button rather than a state they can't get out of.
+- Lighthouse mobile Accessibility: → **100**
+- Lighthouse mobile Performance: 83 → **88** (clears the 80 minimum bar; short of the 90
+  "aim for" target — a conscious tradeoff, not an oversight, given the 3D viewer route's
+  necessarily heavier bundle)
+- WAVE contrast errors, every page: → **0**
+- One concrete fix from the audit: the site's muted-text convention (`opacity-40/50/60` on
+  real text) systemically failed AA contrast in light mode — fixed by bumping every real-text
+  usage to `opacity-70` minimum across 7 files, while correctly leaving disabled-control
+  opacity and decorative indicators alone (WCAG exempts both)
 
-**Perf note:**
+## Known limitations
 
-- Default model started as Khronos's [DamagedHelmet](https://github.com/KhronosGroup/glTF-Sample-Assets)
-  sample (CC BY 4.0), a 3.77MB source file. Ran it through `gltf-transform optimize` (Draco
-  geometry compression + WebP textures capped at 1024px) → **442KB, an 88% reduction**.
-- Confirmed the lazy-loading actually works by inspecting the production build's
-  `react-loadable-manifest.json` rather than assuming `next/dynamic` did what it was supposed
-  to: the ~1.2MB three/R3F/drei/leva chunk shows up **only** in `/3d-viewer`'s manifest, and
-  every other route's manifest is empty for it. Every page pays ~446KB of shared JS; only
-  `/3d-viewer` additionally loads the 1.2MB 3D chunk, and only after hydration.
-- **What I'd add with more time:** self-host the DRACO decoder (currently drei's default,
-  which fetches it from Google's CDN at runtime) to drop the third-party dependency; KTX2
-  texture compression for a smaller GPU memory footprint on lower-end phones; and a real
-  on-device frame-rate measurement — touch handling is confirmed correct by reading
-  `OrbitControls`' source directly (it sets `touchAction: 'none'` on connect, so drag doesn't
-  fight the browser's native scroll), but an actual frames-per-second number on a mid-range
-  phone is still outstanding.
+- **Contact form has no real backend.** `ContactForm` validates client-side but doesn't send
+  anywhere — a deliberate scope decision, not an oversight. Real contact happens via the
+  Calendly booking link or resume/LinkedIn in the meantime.
+- **Chat abuse protection is input caps, not real rate limiting.** Nothing tracks requests
+  across separate conversations or IP addresses — this bounds the cost of one conversation,
+  not the total cost an attacker could rack up by opening many.
+- **Desktop Safari untested.** Chrome, Firefox, and mobile Safari (real iOS device) are
+  confirmed working; I don't have access to macOS to test desktop Safari directly.
+- **3D viewer's DRACO decoder loads from Google's CDN at runtime** (drei's default) rather
+  than being self-hosted — a third-party runtime dependency I'd remove given more time.
+- **FlyRank's Ops-provisioned subdomain isn't live yet** — the site currently lives at
+  `makonnen.is-a.dev` and the Vercel URL; a DNS walkthrough is ready for whenever Ops
+  provisions the real subdomain.
+
+## How AI tools built this
+
+I used Claude as a pairing partner for most of this build, with GPT also helping with
+codebase verification. It wasn't a case of telling AI to build things for me and accepting
+whatever it gave back.
+
+- **How I worked with it:** Claude worked in a sandboxed clone with no push access to my
+  actual repos. Earlier on I was manually editing files; later in the build I switched to
+  `git diff` patch files after Claude pointed out that patches are faster and reduce the
+  chance of accidentally changing the wrong thing, since they target specific lines. I'd
+  still read through the diff, apply it locally, test it, and handle the commit/push/PR
+  myself. Nothing went into my actual repo without me looking at it first.
+- **It actually caught problems:** Claude didn't just trust a "Merged" badge or a green CI
+  check — it verified from a fresh clone. That caught a `*.patch` gitignore rule I thought
+  had been merged but hadn't, a mobile-accessibility PR missing one of three intended files,
+  and an is-a.dev PR that showed "Merged" on GitHub while the actual file still 404'd (turned
+  out the GitHub admin for is-a.dev subdomain registrations still had to merge it from their
+  side).
+- **What Claude actually helped build:** the ChatWidget/ChatPanel bundle-size split, the WCAG
+  contrast fixes across the site, and the input-cap protection on the chat route. This is my
+  first time properly doing front-end development, so I'm still learning the stack I chose —
+  using Claude as a pairing partner helped me understand what I was changing instead of
+  figuring everything out from scratch.
+- **What I still decided myself:** which browsers to test and how, keeping the Contact form's
+  fake backend as a documented limitation instead of building a real one this time, using
+  input caps instead of a proper rate limiter, and what actually got merged.
+- **Why I don't think I was rubber-stamping it:** the merge-gap problems are the best example.
+  If I were just accepting whatever Claude said, those issues would have gone straight
+  through. Having it re-clone and verify what was actually there was a good reminder that a
+  "Merged" status doesn't always mean the thing I expected is actually there — AI can help me
+  build and verify things, but I still need to understand what it's doing and check the
+  result myself.
+
+## Credits
+
+Default 3D model: [DamagedHelmet](https://github.com/KhronosGroup/glTF-Sample-Assets) by
+ctxwing, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), via the Khronos
+glTF Sample Assets — recompressed for this page (Draco geometry + WebP textures, 3.77MB →
+442KB).
