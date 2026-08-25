@@ -174,7 +174,8 @@ describe("ChatPanel", () => {
                 toolCallId: "call-1",
                 state: "output-error",
                 input: { projectName: "Nonexistent Project" },
-                errorText: 'No project found matching "Nonexistent Project"',
+                errorText:
+                  'I don\'t have a project called "Nonexistent Project" — take a look at the /projects page for what\'s actually there, or ask me about one of those by name.',
               },
             ],
           },
@@ -184,7 +185,7 @@ describe("ChatPanel", () => {
     render(<ChatPanel />);
 
     expect(
-      screen.getByText(/Couldn't look that project up: No project found matching/)
+      screen.getByText(/I don't have a project called "Nonexistent Project"/)
     ).toBeInTheDocument();
   });
 
