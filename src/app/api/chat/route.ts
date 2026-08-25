@@ -70,7 +70,9 @@ export async function POST(req: Request) {
         execute: async ({ projectName }: { projectName: string }) => {
           const project = findProject(projectName);
           if (!project) {
-            throw new Error(`No project found matching "${projectName}"`);
+            throw new Error(
+              `I don't have a project called "${projectName}" — take a look at the /projects page for what's actually there, or ask me about one of those by name.`
+            );
           }
           return project;
         },
