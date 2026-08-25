@@ -64,7 +64,7 @@ const frontendProjects = [
     repoUrl: "https://github.com/NBA-Makonnen/Capstone-Portfolio",
     body: [
       "This site itself — built with Next.js App Router, TypeScript, and Tailwind CSS v4, deployed on Vercel. Beyond the standard pages, it includes a site-wide AI chat widget built on the Vercel AI SDK and backed by Google's Gemini model, with a custom tool that looks up real project data and renders distinct states for a loading query, a found result, and a genuine error when nothing matches.",
-      "The chat widget, the contact form, and a reusable animated send button are covered by an automated test suite (Vitest, React Testing Library, and Playwright) wired into GitHub Actions, so a failing test blocks a pull request rather than reaching production. The chat's tool-calling states are mocked in tests rather than hitting the real API, and the end-to-end test intercepts the AI response at the network layer using the SDK's actual streaming format.",
+      "The chat widget and a reusable animated send button are covered by an automated test suite (Vitest, React Testing Library, and Playwright) wired into GitHub Actions, so a failing test blocks a pull request rather than reaching production. The chat's tool-calling states are mocked in tests rather than hitting the real API, and the end-to-end test intercepts the AI response at the network layer using the SDK's actual streaming format.",
     ],
   },
   {

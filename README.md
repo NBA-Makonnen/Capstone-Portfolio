@@ -69,7 +69,7 @@ src/
 │   ├── page.tsx                 # Home
 │   ├── projects/page.tsx        # AWS + front-end project case studies
 │   ├── certificates/page.tsx    # Certifications
-│   ├── contact/page.tsx         # Bio, ContactForm, CV download, Calendly link
+│   ├── contact/page.tsx         # Bio, CV download, Calendly link, direct email + LinkedIn links
 │   ├── health/page.tsx          # Server Component health check (not in nav)
 │   ├── 3d-viewer/page.tsx       # glTF viewer route (not in nav)
 │   ├── button-demo/page.tsx     # SendButton component demo (not in nav)
@@ -81,7 +81,6 @@ src/
 │   ├── ChatPanel.tsx            # Everything interactive — lazy-loaded, mounted on open only
 │   ├── LazyViewer.tsx           # Lazy-loaded wrapper around the R3F/drei/leva 3D scene
 │   ├── ProjectCard.tsx          # Renders getProjectDetails' tool output
-│   ├── ContactForm.tsx          # Validated, not wired to a real backend (see Known limitations)
 │   └── SendButton.tsx           # Reusable animated button (idle/hover/loading/success/error)
 └── lib/
     ├── ai-config.ts             # Model choice + system prompt
@@ -140,16 +139,16 @@ server-side in the route itself (so calling the API directly bypasses nothing). 
 - **`makonnen.is-a.dev` over a paid personal domain or waiting on FlyRank's Ops-provisioned
   subdomain** — free, immediate, and under my own control; a DNS walkthrough for the eventual
   FlyRank subdomain is documented for whenever Ops provisions it.
-- **Contact form stays unwired to a real backend** for now — a deliberate, documented known
-  limitation rather than a half-built feature; real contact currently happens via the
-  Calendly link or resume/LinkedIn.
+- **Contact page uses direct links (email, LinkedIn) instead of a form** — no backend to
+  build or secure, and "email me" is a real `mailto:` link rather than a form that used to
+  validate client-side without actually sending anywhere.
 - **`--color-brand` moved 2% darker** (`#8670A3` → `#816A9F`, same hue/saturation) to clear
   WCAG AA contrast for white text — one token change fixed four separate failing UI elements
   at once (CTA, chat toggle, chat bubbles, project badges) because they all read from it.
 
 ## Testing
 
-Vitest + React Testing Library + Playwright, wired into CI. 47 unit/component tests across 9
+Vitest + React Testing Library + Playwright, wired into CI. 32 unit/component tests across 5
 test files, plus 1 Playwright end-to-end test covering the primary user flow. `LazyViewer` and
 `ChatWidget`'s tests mock `next/dynamic` to test the lazy-loaded components synchronously
 rather than skipping them.
@@ -171,9 +170,6 @@ screenshots in [`AUDIT.md`](./AUDIT.md). Headline results:
 
 ## Known limitations
 
-- **Contact form has no real backend.** `ContactForm` validates client-side but doesn't send
-  anywhere — a deliberate scope decision, not an oversight. Real contact happens via the
-  Calendly booking link or resume/LinkedIn in the meantime.
 - **Chat abuse protection is input caps, not real rate limiting.** Nothing tracks requests
   across separate conversations or IP addresses — this bounds the cost of one conversation,
   not the total cost an attacker could rack up by opening many.
