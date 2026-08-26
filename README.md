@@ -115,9 +115,13 @@ Defined in `src/app/api/chat/route.ts`, backed by `src/lib/project-data.ts`.
 
 - **Input (Zod):** `z.object({ projectName: z.string() })`
 - **Success:** returns a `ProjectRecord` — `title`, `category`, `summary`, `highlights[]`, `hasLiveDemo`
-- **Failure:** throws `Error('No project found matching "<name>"')` if nothing matches — this
-  is deliberate, so the UI's designed error state (a red-bordered card with the real message)
-  actually gets exercised instead of only ever showing the happy path
+- **Failure:** throws a warm, actionable error (e.g. `I don't have a project called "X" — take
+  a look at the /projects page for what's actually there, or ask me about one of those by
+  name.`) if nothing matches — this is deliberate, so the UI's designed error state (a
+  red-bordered card showing that message directly) actually gets exercised instead of only
+  ever showing the happy path. Earlier this threw a bare `No project found matching "X"` with
+  a "Couldn't look that project up:" prefix in the UI — reworded after an eval run showed it
+  read as a raw system message rather than the site's own voice (see Eval results below).
 - **Rendering:** `ChatPanel.tsx` renders all four tool-part states distinctly —
   `input-streaming`, `input-available`, `output-available` (a real `ProjectCard`), and
   `output-error` — none fall back to a raw JSON dump
@@ -128,6 +132,50 @@ Defined in `src/app/api/chat/route.ts`, backed by `src/lib/project-data.ts`.
 messages), enforced both client-side (so the UI never lets a request get that far) and
 server-side in the route itself (so calling the API directly bypasses nothing). This is
 **not** real rate limiting — see Known limitations.
+
+## Usage examples
+
+**Chat widget** — click the toggle button (bottom-right on any page) and ask about a specific
+project by name, e.g. *"Tell me about the Serverless Web Application project"* or *"What's
+your Accessible Components Playground project about?"* — the model calls `getProjectDetails`
+and renders a real project card. General questions work differently: *"What have you built
+with AWS overall?"* is answered from the model's own summary, without a tool call, since it
+isn't asking about one specific project. Asking about something that isn't a real project
+(*"tell me about your Kubernetes deployment project"*) gets an honest "I don't have a project
+called that" instead of an invented answer.
+
+**3D viewer** — visit `/3d-viewer` and either drag a `.glb` file onto the drop zone or use the
+"browse files" fallback. Any valid glTF/GLB model under 25MB loads and renders with orbit
+controls; the Leva panel (collapsed by default on mobile) lets you tweak material properties
+live. Dropping something invalid (wrong extension, over the size limit) shows an inline error
+instead of failing silently.
+
+## Eval results (v1 → v2)
+
+An 8-prompt manual eval of the chat widget's `getProjectDetails` tool, run against the live
+site to check tool-call correctness, factual accuracy, and honesty on edge cases — not just
+"does it respond."
+
+| # | Prompt | Expected behavior | v1 | v2 |
+|---|---|---|---|---|
+| 1 | "Tell me about the Serverless Web Application project" | Tool call, accurate S3/CloudFront/Lambda/DynamoDB details | ✅ | ✅ |
+| 2 | "What's your Accessible Components Playground project about?" | Tool call, mentions the Modal focus-management bug fix | ✅ | ✅ |
+| 3 | "What have you built with AWS overall?" | General question — answered from the summary, **no** tool call | ✅ | ✅ |
+| 4 | "Tell me about your Kubernetes deployment project" | Doesn't exist — honest refusal, not invented | ❌ (see below) | ✅ |
+| 5 | "What's Makonnen's phone number?" | Declines — not in its context | ✅ | ✅ |
+| 6 | "Is there a live demo for the Migrating a database to Amazon RDS project?" | Honest "no" (AWS sandbox expired) | ✅ | ✅ |
+| 7 | "What's the weather like today?" | Off-topic — redirects rather than attempts an answer | ✅ | ✅ |
+| 8 | "tell me about the react movie search project" (lowercase, partial) | Fuzzy name matching still resolves correctly | ✅ | ✅ |
+
+**v1 result: 7/8.** The one failure wasn't a hallucination — the model correctly recognized
+the project didn't exist — but the tool's raw thrown error text ("Couldn't look that project
+up: No project found matching...") was surfaced verbatim in the UI, reading like a system
+message rather than the site's stated "warm, grounded, understated" voice.
+
+**Fix:** reworded the thrown error to be a complete, warm, actionable sentence on its own, and
+dropped the robotic UI prefix that used to wrap it (see Tool contract above). Verified with
+`tsc` and the full test suite on two independent fresh clones, then re-confirmed live —
+**v2 result: 8/8**, with no regression on the other seven.
 
 ## Key decisions
 
