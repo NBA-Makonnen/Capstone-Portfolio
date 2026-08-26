@@ -94,6 +94,60 @@ the only thing in the initial bundle; `ChatPanel` loads via `next/dynamic({ ssr:
 only once the widget is clicked, and idle-time-prefetches so that first click still feels
 instant. This cut a real, measured 464KB out of every other page's bundle.
 
+### Runtime flow (chat request)
+
+The file tree above shows *what* the pieces are; this shows *how a message actually moves*
+through them on a real "tell me about the 3D viewer project" question:
+
+```
+ Browser                          Server (Vercel)
+┌─────────────┐  click "chat"    ┌────────────────────┐
+│ ChatWidget  │ ───────────────► │  next/dynamic loads │
+│ (toggle btn)│                  │  ChatPanel chunk    │
+└─────────────┘                  └──────────┬─────────┘
+                                             │ mounts
+                                             ▼
+                                  ┌────────────────────┐
+                                  │ ChatPanel (useChat) │
+                                  │  types + submits    │
+                                  └──────────┬─────────┘
+                                             │ POST
+                                             ▼
+                          ┌──────────────────────────────────┐
+                          │ /api/chat/route.ts                │
+                          │  1. check chat-limits.ts caps      │──► 413/429 + plain text
+                          │     (length / message count)       │    if over cap, stream
+                          │  2. streamText() → Gemini           │    never starts
+                          │     via ai-config.ts system prompt  │
+                          └──────────────────┬─────────────────┘
+                                             │ model decides a named
+                                             │ project needs real data
+                                             ▼
+                          ┌──────────────────────────────────┐
+                          │ tool: getProjectDetails(Zod schema)│
+                          │  looks up project-data.ts          │──► throws if no match
+                          └──────────────────┬─────────────────┘    (renders output-error
+                                             │ tool result           tool-part state)
+                                             ▼
+                          ┌──────────────────────────────────┐
+                          │ model streams final answer using   │
+                          │ the tool result as ground truth     │
+                          └──────────────────┬─────────────────┘
+                                             │ streamed tokens
+                                             ▼
+                                  ┌────────────────────┐
+                                  │ ChatPanel renders:   │
+                                  │  - streamed text      │
+                                  │  - ProjectCard (if     │
+                                  │    tool output present)│
+                                  └────────────────────┘
+```
+
+The key constraint this enforces: the model is **never allowed to describe a specific,
+named project from memory** — only the tool's return value can populate that answer.
+General questions (e.g. "what AWS services have you used?") skip the tool and answer
+straight from the system prompt's summary instead.
+
 ## AI integration
 
 A site-wide chat widget lets visitors ask about projects, certifications, and background.
