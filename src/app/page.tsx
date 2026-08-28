@@ -1,20 +1,30 @@
 import Link from "next/link";
+import { HeroShader } from "@/components/hero-shader/HeroShader";
 
 export default function HomePage() {
   return (
-    <section className="flex flex-col items-center justify-center text-center px-6 py-24 gap-6">
-      <h1 className="text-4xl font-bold max-w-2xl">
-        A front-end AI engineer focused on building things that work.
-      </h1>
-      <p className="text-lg opacity-80 max-w-xl">
-        AWS Certified Cloud Practitioner. Currently interning at FlyRank AI.
-      </p>
-      <Link
-        href="/projects"
-        className="bg-brand dark:bg-brand-dark text-white px-6 py-3 rounded font-body hover:bg-brand/90 dark:hover:bg-brand-dark/90 transition-colors"
-      >
-        See the work
-      </Link>
+    <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
+      <HeroShader />
+
+      {/* Contrast scrim: a solid-ish backdrop behind the text block,
+          independent of whatever colors the shader happens to be
+          showing underneath at any given moment/mouse position. This is
+          what keeps text contrast a design decision instead of a
+          runtime gamble against an animated background. */}
+      <div className="relative z-10 flex flex-col items-center gap-6 rounded-2xl bg-black/55 px-8 py-10 backdrop-blur-sm">
+        <h1 className="max-w-2xl text-4xl font-bold text-white">
+          A front-end AI engineer focused on building things that work.
+        </h1>
+        <p className="max-w-xl text-lg text-white/85">
+          AWS Certified Cloud Practitioner. Currently interning at FlyRank AI.
+        </p>
+        <Link
+          href="/projects"
+          className="rounded bg-brand px-6 py-3 font-body text-white transition-colors hover:bg-brand/90"
+        >
+          See the work
+        </Link>
+      </div>
     </section>
   );
 }
