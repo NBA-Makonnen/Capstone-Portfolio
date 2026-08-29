@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Header } from "@/components/Header";
 import { ChatWidget } from "@/components/ChatWidget";
+import { SiteBackground } from "@/components/animated-background/SiteBackground";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable}>
       <body className="bg-canvas dark:bg-canvas-dark text-ink dark:text-ink-dark font-body min-h-screen">
+        <SiteBackground />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded focus:bg-brand dark:focus:bg-brand-dark focus:text-white focus:px-4 focus:py-2"

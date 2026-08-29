@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { HeroShader } from "@/components/hero-shader/HeroShader";
+import { AnimatedBackground } from "@/components/animated-background/AnimatedBackground";
 
 export default function HomePage() {
   return (
     <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden px-6 text-center">
-      <HeroShader />
+      <AnimatedBackground variant="hero" />
 
       {/* Contrast scrim: a solid-ish backdrop behind the text block,
           independent of whatever colors the shader happens to be

@@ -18,16 +18,28 @@ void main() {
 // playground. Kept from the playground: the value-noise hash, the fbm
 // (fractal Brownian motion) loop shape, and the overall "domain-warp two
 // fbm layers, ramp through a palette" structure. Changed to make it mine:
-// the actual palette (pulled from this site's --color-brand /
-// --color-accent tokens instead of the playground's default teal/purple),
-// the vertical curtain falloff so it reads as an aurora rather than a flat
-// blob, the mouse term (the playground had none), and the grain pass.
+// the palette is driven by three color uniforms (see below) rather than
+// hardcoded, the vertical curtain falloff so it reads as an aurora rather
+// than a flat blob, the mouse term (the playground had none), and the
+// grain pass.
 export const fragmentShaderSource = `#version 300 es
 precision highp float;
 
 uniform float u_time;       // seconds since the canvas mounted
 uniform vec2  u_resolution; // canvas size in device pixels
 uniform vec2  u_mouse;      // pointer position, normalized 0..1, eased
+
+// Palette, supplied from JS rather than hardcoded here. This is what
+// makes the whole effect theme-aware: the light/dark toggle doesn't
+// touch the shader logic at all, it just swaps which three colors get
+// passed in each frame (see ShaderCanvas.tsx). u_colorBase is the page's
+// own background color (so the hero/ambient background actually matches
+// the surrounding UI instead of always being black), u_colorMid is the
+// brand color for the active theme, u_colorHigh is a paler highlight
+// used sparingly for the brightest ribbon cores.
+uniform vec3 u_colorBase;
+uniform vec3 u_colorMid;
+uniform vec3 u_colorHigh;
 
 out vec4 fragColor;
 
@@ -102,17 +114,13 @@ void main() {
   float intensity = n2 * curtain;
 
   // --- Palette ---------------------------------------------------
-  // Base: this site's dark canvas color, so the hero reads as "glow on
-  // black" rather than "washed-out gradient".
-  vec3 base = vec3(0.0, 0.0, 0.0);
-  // Mid glow: the site's brand purple (--color-brand, #816A9F).
-  vec3 brand = vec3(0.5059, 0.4157, 0.6235);
-  // Highlight: the site's accent pink (--color-accent, #FEDADA), used
-  // sparingly for the brightest ribbon cores only.
-  vec3 accent = vec3(0.9961, 0.8549, 0.8549);
-
-  vec3 color = mix(base, brand, smoothstep(0.15, 0.55, intensity));
-  color = mix(color, accent, smoothstep(0.6, 0.95, intensity));
+  // All three stops now come from JS as uniforms (see declarations
+  // above) instead of being hardcoded here, so the exact same shader
+  // renders correctly in both light mode (pale background, purple
+  // brand glow) and dark mode (black background, red brand glow)
+  // without any branching in the GLSL itself.
+  vec3 color = mix(u_colorBase, u_colorMid, smoothstep(0.15, 0.55, intensity));
+  color = mix(color, u_colorHigh, smoothstep(0.6, 0.95, intensity));
 
   // --- Grain pass ---------------------------------------------------
   // Cheap dithering: a small amount of per-pixel, per-frame noise breaks
