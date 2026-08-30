@@ -5,6 +5,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Streamdown } from "streamdown";
 import { ProjectCard } from "@/components/ProjectCard";
+import { GlassButton } from "@/components/ui/GlassButton";
 import { MAX_MESSAGE_CHARS, MAX_MESSAGES } from "@/lib/chat-limits";
 
 export function ChatPanel() {
@@ -257,22 +258,19 @@ export function ChatPanel() {
             style={{ fontSize: 16 }}
           />
           {isBusy ? (
-            <button
+            <GlassButton
               ref={stopButtonRef}
               type="button"
+              variant="secondary"
               onClick={stop}
-              className="rounded bg-black/10 dark:bg-white/10 text-ink dark:text-ink-dark px-3 py-2 text-sm font-heading"
+              className="font-heading"
             >
               Stop
-            </button>
+            </GlassButton>
           ) : (
-            <button
-              type="submit"
-              disabled={!input.trim()}
-              className="rounded bg-brand dark:bg-brand-dark text-white px-3 py-2 text-sm font-heading disabled:opacity-50"
-            >
+            <GlassButton type="submit" variant="primary" disabled={!input.trim()} className="font-heading">
               Send
-            </button>
+            </GlassButton>
           )}
         </form>
       )}

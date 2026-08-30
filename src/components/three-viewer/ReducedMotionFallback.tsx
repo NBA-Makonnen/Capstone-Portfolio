@@ -1,5 +1,7 @@
 "use client";
 
+import { GlassButton } from "@/components/ui/GlassButton";
+
 export function ReducedMotionFallback({
   onLoadAnyway,
 }: {
@@ -20,13 +22,13 @@ export function ReducedMotionFallback({
           scene didn&apos;t load automatically.
         </p>
       </div>
-      <button
-        type="button"
-        onClick={onLoadAnyway}
-        className="text-xs rounded border border-brand/30 dark:border-brand-dark/40 px-3 py-1.5"
-      >
+      {/* GlassButton's hover/tap scale is driven by usePressableMotion,
+          which already respects prefers-reduced-motion — appropriate
+          here of all places, since this component only renders *for*
+          reduced-motion users in the first place. */}
+      <GlassButton type="button" variant="secondary" onClick={onLoadAnyway}>
         Load interactive 3D scene anyway
-      </button>
+      </GlassButton>
     </div>
   );
 }

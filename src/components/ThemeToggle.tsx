@@ -1,11 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
+import { motion } from "motion/react";
+import { usePressableMotion } from "./ui/usePressableMotion";
 
 // Same theme logic as before, byte-for-byte: localStorage key, the class
 // toggled on documentElement, defaulting to light. Only the rendered
 // control changed, from a text button to a slider-style switch.
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);
+  const pressable = usePressableMotion();
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -22,17 +25,21 @@ export function ThemeToggle() {
   }
 
   return (
-    <button
+    <motion.button
       type="button"
       role="switch"
       aria-checked={isDark}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={toggle}
+      whileTap={pressable.whileTap}
+      transition={pressable.transition}
       className="relative inline-flex h-7 w-14 shrink-0 items-center rounded-full border border-brand/30 bg-canvas transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-brand-dark/40 dark:bg-black dark:focus-visible:outline-brand-dark"
     >
       {/* Thumb: position is the primary state signal (left = light,
           right = dark); the icon inside it is a second, redundant
-          signal so the state doesn't rely on position/color alone. */}
+          signal so the state doesn't rely on position/color alone. This
+          transform-based slide is separate from (and unaffected by) the
+          whileTap scale on the track button above it. */}
       <span
         aria-hidden="true"
         className={
@@ -57,6 +64,6 @@ export function ThemeToggle() {
           </svg>
         )}
       </span>
-    </button>
+    </motion.button>
   );
 }

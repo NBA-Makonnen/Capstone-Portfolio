@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { GlassButton } from "./ui/GlassButton";
 
 const ChatPanel = dynamic(
   () => import("./ChatPanel").then((mod) => mod.ChatPanel),
@@ -45,15 +46,16 @@ export function ChatWidget() {
           entire cost every page pays; everything else (the AI SDK,
           Streamdown's markdown renderer, ProjectCard) only loads once the
           panel actually opens. */}
-      <button
+      <GlassButton
         type="button"
+        variant="primary"
         onClick={() => setIsOpen((v) => !v)}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close chat" : "Ask me about my work"}
-        className="fixed bottom-4 right-4 z-50 rounded-full bg-brand dark:bg-brand-dark text-white px-5 py-3 shadow-lg font-heading"
+        className="fixed bottom-4 right-4 z-50 shadow-lg font-heading"
       >
         {isOpen ? "Close" : "Ask me"}
-      </button>
+      </GlassButton>
 
       {isOpen && <ChatPanel />}
     </>

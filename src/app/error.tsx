@@ -1,5 +1,8 @@
 "use client";
 
+import { GlassButton } from "@/components/ui/GlassButton";
+import { GlassAnchor } from "@/components/ui/GlassAnchor";
+
 export default function Error({
   error,
   reset,
@@ -15,19 +18,12 @@ export default function Error({
         or head back to the homepage.
       </p>
       <div className="flex gap-3 justify-center">
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded bg-brand dark:bg-brand-dark text-white px-4 py-2 text-sm font-heading"
-        >
+        <GlassButton type="button" variant="primary" onClick={reset} className="font-heading">
           Try again
-        </button>
-        <a
-          href="/"
-          className="rounded border border-brand/20 dark:border-brand-dark/30 px-4 py-2 text-sm font-heading"
-        >
+        </GlassButton>
+        <GlassAnchor href="/" variant="secondary" className="font-heading">
           Go home
-        </a>
+        </GlassAnchor>
       </div>
     </section>
   );

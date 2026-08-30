@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SendButton, SendButtonStatus } from "@/components/SendButton";
+import { GlassButton } from "@/components/ui/GlassButton";
 
 export default function ButtonDemoPage() {
   const [status, setStatus] = useState<SendButtonStatus>("idle");
@@ -51,20 +52,12 @@ export default function ButtonDemoPage() {
       </div>
 
       <div className="flex gap-3 border-t border-brand/20 dark:border-brand-dark/30 pt-6">
-        <button
-          type="button"
-          onClick={forceSuccess}
-          className="text-xs rounded border border-brand/30 dark:border-brand-dark/40 px-3 py-1.5"
-        >
+        <GlassButton type="button" variant="secondary" onClick={forceSuccess} className="text-xs">
           Force success
-        </button>
-        <button
-          type="button"
-          onClick={forceError}
-          className="text-xs rounded border border-brand/30 dark:border-brand-dark/40 px-3 py-1.5"
-        >
+        </GlassButton>
+        <GlassButton type="button" variant="secondary" onClick={forceError} className="text-xs">
           Force error
-        </button>
+        </GlassButton>
       </div>
 
       <div className="mt-12 text-xs opacity-70 space-y-2 border-t border-brand/20 dark:border-brand-dark/30 pt-6">

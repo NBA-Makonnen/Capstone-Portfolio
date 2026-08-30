@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
+import { GlassAnchor } from "@/components/ui/GlassAnchor";
 
 export const metadata: Metadata = {
   title: "Contact — Makonnen Mulima",
   description: "Get in touch with Makonnen Mulima — book a call, download the resume, or reach out directly by email or LinkedIn.",
 };
-
-const contactLinkClasses =
-  "inline-flex items-center rounded border border-brand/40 dark:border-brand-dark/40 px-4 py-2 text-sm font-medium text-ink dark:text-ink-dark hover:bg-brand/10 dark:hover:bg-brand-dark/10 transition-colors";
 
 export default function ContactPage() {
   return (
@@ -18,28 +16,24 @@ export default function ContactPage() {
           and troubleshooting what breaks along the way. This site is proof of both.
         </p>
         <div className="flex flex-wrap gap-3 mt-4">
-          <a href="/resume.pdf" className={contactLinkClasses}>
+          <GlassAnchor href="/resume.pdf">
             Download CV <span className="opacity-70 ml-1">(PDF)</span>
-          </a>
-          <a
+          </GlassAnchor>
+          <GlassAnchor
             href="https://calendly.com/bundamulima/30min"
             target="_blank"
             rel="noopener noreferrer"
-            className={contactLinkClasses}
           >
             Book a call
-          </a>
-          <a href="mailto:bundamulima@gmail.com" className={contactLinkClasses}>
-            Email me
-          </a>
-          <a
+          </GlassAnchor>
+          <GlassAnchor href="mailto:bundamulima@gmail.com">Email me</GlassAnchor>
+          <GlassAnchor
             href="https://www.linkedin.com/in/makonnen-mulima-b9a685231"
             target="_blank"
             rel="noopener noreferrer"
-            className={contactLinkClasses}
           >
             LinkedIn<span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          </GlassAnchor>
         </div>
       </div>
     </section>
