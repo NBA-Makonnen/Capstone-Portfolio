@@ -23,10 +23,6 @@ Real before/after accessibility and performance evidence from the audit lives in
 [`docs/audit-screenshots/`](./docs/audit-screenshots) (Lighthouse and WAVE, before and
 after, for every page) — see [`AUDIT.md`](./AUDIT.md) for the full writeup.
 
-<!-- TODO: add 2-3 product screenshots here (homepage, the chat widget mid-conversation,
-     /3d-viewer with a model loaded) before submitting — these need to come from an actual
-     browser session, not something that can be generated from the codebase. -->
-
 ## Setup & run
 
 ```bash
@@ -247,10 +243,24 @@ dropped the robotic UI prefix that used to wrap it (see Tool contract above). Ve
 - **`--color-brand` moved 2% darker** (`#8670A3` → `#816A9F`, same hue/saturation) to clear
   WCAG AA contrast for white text — one token change fixed four separate failing UI elements
   at once (CTA, chat toggle, chat bubbles, project badges) because they all read from it.
+- **One `AnimatedBackground` component (hero/ambient variants) instead of a homepage-only
+  shader** — the homepage gets it full-strength; every other page gets a blurred, low-opacity
+  ambient version via a single `<SiteBackground />` in the root layout. Palette is driven by
+  uniforms (light = brand purple family, dark = brand-dark red family) instead of hardcoded
+  GLSL literals, so both variants and both themes stay in sync from one source of truth.
+- **One shared `glassClasses()` recipe instead of per-button styling** — backdrop-blur +
+  border + inset highlight, three variants (primary/secondary/icon) covering every
+  button-like control site-wide instead of each component inventing its own combination.
+- **Primary CTA/chat-toggle text is dark ink in light mode, white in dark mode** — the
+  translucency the glass look needs lightens `--color-brand` enough once composited over the
+  pale light-mode canvas that white text drops below WCAG AA; no opacity value preserves both
+  real translucency and white-text contrast in light mode, so text color adapts instead.
+  Dark mode's near-black canvas has enough contrast headroom to stay white while getting even
+  more translucent.
 
 ## Testing
 
-Vitest + React Testing Library + Playwright, wired into CI. 32 unit/component tests across 5
+Vitest + React Testing Library + Playwright, wired into CI. 41 unit/component tests across 8
 test files, plus 1 Playwright end-to-end test covering the primary user flow. `LazyViewer` and
 `ChatWidget`'s tests mock `next/dynamic` to test the lazy-loaded components synchronously
 rather than skipping them.
@@ -300,7 +310,13 @@ whatever it gave back.
   had been merged but hadn't, a mobile-accessibility PR missing one of three intended files,
   and an is-a.dev PR that showed "Merged" on GitHub while the actual file still 404'd (turned
   out the GitHub admin for is-a.dev subdomain registrations still had to merge it from their
-  side).
+  side). Later, reviewing a screenshot of the new glass buttons, it traced a mispositioned
+  chat toggle to an actual Tailwind cascade conflict (`.fixed` compiles before `.relative` in
+  the generated CSS, so a shared `relative` class was silently overriding a component's own
+  `fixed` positioning) by generating the real compiled CSS from this repo's own Tailwind
+  config and inspecting the rule order, rather than guessing from the class names — and
+  separately worked out, with the actual contrast math, that the translucency the glass look
+  needed would drop white-text contrast below WCAG AA in light mode before it caught my eye.
 - **What Claude actually helped build:** the ChatWidget/ChatPanel bundle-size split, the WCAG
   contrast fixes across the site, and the input-cap protection on the chat route. This is my
   first time properly doing front-end development, so I'm still learning the stack I chose —
