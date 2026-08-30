@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AnimatedBackground } from "@/components/animated-background/AnimatedBackground";
+import { GlassLink } from "@/components/ui/GlassLink";
 
 export default function HomePage() {
   return (
@@ -18,12 +18,9 @@ export default function HomePage() {
         <p className="max-w-xl text-lg text-white/85">
           AWS Certified Cloud Practitioner. Currently interning at FlyRank AI.
         </p>
-        <Link
-          href="/projects"
-          className="rounded bg-brand px-6 py-3 font-body text-white transition-colors hover:bg-brand/90"
-        >
+        <GlassLink href="/projects" variant="primary">
           See the work
-        </Link>
+        </GlassLink>
       </div>
     </section>
   );

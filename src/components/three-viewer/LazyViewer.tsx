@@ -11,6 +11,7 @@ import {
 import dynamic from "next/dynamic";
 import { DEFAULT_MODEL_URL } from "./constants";
 import { ReducedMotionFallback } from "./ReducedMotionFallback";
+import { GlassButton } from "@/components/ui/GlassButton";
 
 const ViewerScene = dynamic(
   () => import("./ViewerScene").then((mod) => mod.ViewerScene),
@@ -177,13 +178,9 @@ export function LazyViewer() {
           className="hidden"
         />
         {isCustomModel && (
-          <button
-            type="button"
-            onClick={resetToDefault}
-            className="rounded border border-brand/30 dark:border-brand-dark/40 px-2 py-1 shrink-0"
-          >
+          <GlassButton type="button" variant="secondary" onClick={resetToDefault} className="shrink-0">
             Reset to default
-          </button>
+          </GlassButton>
         )}
       </div>
 
