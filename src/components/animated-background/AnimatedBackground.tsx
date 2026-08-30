@@ -28,11 +28,20 @@ const VARIANT_CLASSES: Record<NonNullable<AnimatedBackgroundProps["variant"]>, s
   hero: "absolute inset-0 h-full w-full",
   // fixed + -z-10: sits behind Header/main/ChatWidget (all normal-flow
   // or z-index:auto positioned content) without needing any z-index
-  // coordination with them. blur-[80px] + opacity-25: heavy enough that
-  // the motion reads as atmosphere, not a second visual element — see
-  // the readability requirement this was built against.
+  // coordination with them. Opacity/blur are theme-specific, not a
+  // single shared value: the light palette's mid/high tones (#816A9F,
+  // #FEDADA — see palette.ts) sit close in luminance to the light
+  // canvas (#E0E8F2), so at the same 25%/80px used for dark mode the
+  // animation composited down to a difference of single-digit RGB
+  // values against the canvas — imperceptible in practice, even though
+  // dark mode's near-black canvas makes the identical numbers read
+  // clearly (going from 0 to any positive value reads as a much bigger
+  // relative change than a similar move between two pale tones does).
+  // Light mode gets more opacity and a tighter blur radius so the
+  // motion stays legible; dark mode keeps the original values since
+  // those already work.
   ambient:
-    "fixed inset-0 -z-10 h-screen w-screen overflow-hidden blur-[80px] opacity-25 pointer-events-none",
+    "fixed inset-0 -z-10 h-screen w-screen overflow-hidden blur-[60px] dark:blur-[80px] opacity-45 dark:opacity-25 pointer-events-none",
 };
 
 export function AnimatedBackground({ variant = "hero" }: AnimatedBackgroundProps) {
