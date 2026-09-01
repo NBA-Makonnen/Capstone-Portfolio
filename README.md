@@ -1,8 +1,8 @@
 # Capstone Portfolio
 
 Personal portfolio site for Makonnen B. Mulima — AWS Certified Cloud Practitioner and
-Front-end AI Engineering intern at FlyRank AI. Built with Next.js App Router, TypeScript,
-and Tailwind CSS, deployed on Vercel.
+Front-end AI Engineering developer. Built with Next.js App Router, TypeScript, and
+Tailwind CSS, deployed on Vercel.
 
 **Live:** [makonnen.is-a.dev](https://makonnen.is-a.dev) (also at
 [makonnen-mulima-portfolio.vercel.app](https://makonnen-mulima-portfolio.vercel.app))
