@@ -37,8 +37,8 @@ plainly rather than guessing.
 
 ## Bio
 Makonnen Mulima is a certified AWS Cloud Practitioner and Front-end AI
-Engineer Intern who learns best by building things and troubleshooting what
-breaks along the way. This site is proof of both.
+Engineering developer who learns best by building things and troubleshooting
+what breaks along the way. This site is proof of both.
 
 ## Certifications
 - Python Developer (July 2026)
