@@ -16,7 +16,7 @@ export default function HomePage() {
           A front-end AI engineer focused on building things that work.
         </h1>
         <p className="max-w-xl text-lg text-white/85">
-          AWS Certified Cloud Practitioner and Front-end AI Engineering developer at FlyRank AI.
+          AWS Certified Cloud Practitioner branching into Front-end AI Engineering.
         </p>
         <GlassLink href="/projects" variant="primary">
           See the work

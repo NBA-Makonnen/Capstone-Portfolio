@@ -12,7 +12,7 @@ export default function ContactPage() {
       <div>
         <h1 className="text-3xl font-bold mb-4">About &amp; Contact</h1>
         <p className="opacity-80">
-          I&apos;m Makonnen Mulima, a certified AWS Cloud Practitioner and Front-end AI Engineering developer who learns best by building things
+          I&apos;m Makonnen Mulima, a certified AWS Cloud Practitioner and Front-end AI Engineer who learns best by building things
           and troubleshooting what breaks along the way. This site is proof of both.
         </p>
         <div className="flex flex-wrap gap-3 mt-4">
