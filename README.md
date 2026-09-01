@@ -1,7 +1,7 @@
 # Capstone Portfolio
 
 Personal portfolio site for Makonnen B. Mulima — AWS Certified Cloud Practitioner and
-Front-end AI Engineering developer. Built with Next.js App Router, TypeScript, and
+Front-end AI Engineer. Built with Next.js App Router, TypeScript, and
 Tailwind CSS, deployed on Vercel.
 
 **Live:** [makonnen.is-a.dev](https://makonnen.is-a.dev) (also at
