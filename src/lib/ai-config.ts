@@ -41,6 +41,7 @@ Engineer who learns best by building things and troubleshooting
 what breaks along the way. This site is proof of both.
 
 ## Certifications
+- Front-end AI Engineering (FlyRank AI) (August 2026)
 - Python Developer (July 2026)
 - Full Stack Development (July 2025)
 - Microsoft AI Fluency (May 2025)

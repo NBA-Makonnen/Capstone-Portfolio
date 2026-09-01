@@ -6,6 +6,7 @@ export const metadata: Metadata = {
 };
 
 const certifications = [
+  { name: "Front-end AI Engineering (FlyRank AI)", date: "August 2026" },
   { name: "Python Developer", date: "July 2026" },
   { name: "Full Stack Development", date: "July 2025" },
   { name: "Microsoft AI Fluency", date: "May 2025" },
